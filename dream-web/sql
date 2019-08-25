@@ -1,0 +1,14 @@
+CREATE TABLE `user` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `userName` varchar(64) NOT NULL DEFAULT '',
+  `password` varchar(64) NOT NULL DEFAULT '',
+  `email` varchar(64) NOT NULL DEFAULT '',
+  `phone` varchar(16) NOT NULL DEFAULT '',
+  `userID` varchar(24) NOT NULL DEFAULT '',
+  `createTime` datetime NOT NULL,
+  `updateTime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `pinx` (`phone`),
+  UNIQUE KEY `einx` (`email`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
