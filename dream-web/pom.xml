@@ -6,4 +6,16 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>dream-web</artifactId>
+  
+  <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+  	<dependency>
+		<groupId>com.palace</groupId>
+    	<artifactId>dream-common</artifactId>
+    	<version>0.0.1-SNAPSHOT</version>
+	</dependency>
+  </dependencies>
 </project>

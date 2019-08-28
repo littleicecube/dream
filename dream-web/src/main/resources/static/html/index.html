@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>index</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link href="http://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.css" rel="stylesheet" media="screen"/>
+<link href="../ref/css/main.css" rel="stylesheet"/>
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="http://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<style>
+</style>
+</head>
+
+
+
+<body>
+	<div class="container-fluid">
+		<div class="row">top</div>
+		<div class="row left">
+			<div class="col-md-2">
+				<a href="javascript:click()">click</a>
+			</div>
+			<div class="col-md-10">
+				main
+				<div id="contentId"></div>
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+	$(function(){
+		
+	})
+	function click(){
+		console.log("aaa");
+		console.log($("#contentId"));
+		$("#contentId").load("http://baidu.com");
+		console.log('bbb');
+	}
+</script>
+</html>
