@@ -21,7 +21,7 @@ spring:
       max-wait: 60000
       url: jdbc:mysql://68.168.137.110:3306/dream?useUnicode=true&autoReconnect=true&characterEncoding=UTF-8&socketTimeout=30000&connectTimeout=3000&allowMultiQueries=true
       username: root
-      password: mysqldata8290080
+      password: 
       test-on-borrow: false
       pool-prepared-statements: true
       initial-size: 1
