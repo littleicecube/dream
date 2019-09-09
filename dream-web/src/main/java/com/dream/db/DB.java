@@ -31,7 +31,7 @@ public class DB extends JdbcTemplate{
 	
 	public long insert(String sql,Object ...args) {
 		GeneratedKeyHolder holder = new GeneratedKeyHolder();
-		getTemplate().update(new PreparedStatementCreator() {
+		getWriteTemplate().update(new PreparedStatementCreator() {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 				PreparedStatement ps = con.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
@@ -45,25 +45,28 @@ public class DB extends JdbcTemplate{
 	}
 	
 	public int update(String sql,Object ...args) {
-		return getTemplate().update(sql, args);
+		return getWriteTemplate().update(sql, args);
 	}
 	public List<Map<String,Object>>  queryForList(String sql){
-		return getTemplate().queryForList(sql);
+		return getReadTemplate().queryForList(sql);
 	}
 	public List<Map<String,Object>>  queryForList(String sql,Object ...args){
-		return getTemplate().queryForList(sql,args);
+		return getReadTemplate().queryForList(sql,args);
 	}
 	public CMap queryCMap(String sql) {
 		return null;
 	}
 	public Map<String,Object> queryForMap(String sql){
-		return getTemplate().queryForMap(sql);
+		return getReadTemplate().queryForMap(sql);
 	}
 	public Map<String,Object> queryForMap(String sql,Object ...args){
-		return getTemplate().queryForMap(sql,args);
+		return getReadTemplate().queryForMap(sql,args);
 	}
 	
-	public SimpleTemplate getTemplate() {
+	public SimpleTemplate getReadTemplate() {
+		return defaultTemplate;
+	}
+	public SimpleTemplate getWriteTemplate() {
 		return defaultTemplate;
 	}
 	
