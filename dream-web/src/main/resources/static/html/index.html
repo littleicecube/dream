@@ -1,37 +1,93 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link href="http://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.css" rel="stylesheet" media="screen"/>
-<link href="../ref/css/main.css" rel="stylesheet" media="screen"> 
-<script src="http://code.jquery.com/jquery.js"></script>
-<script src="http://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<style>
-</style>
-</head>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>index</title>
+    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../treeview/bootstrap-treeview.css" rel="stylesheet">
+    <style>
+       body{
+            margin:0; 
+            padding:0;
+            font-family: Lato,Helvetica,Arial,sans-serif;
+                font-size: 14px;
+                line-height: 1.72222;
+                color: #34495e;
+                background-color: #fff;
+        }
+        .wrap {
+                min-width: 100%;
+                position: absolute;
+                background: #eff3f6 bottom;
+                min-height: 100%;
+                overflow: hidden;
+            }
+        .left{
+            margin-left:0px;
+                position: absolute;
+                box-sizing: border-box;
+                width: 200px;
+                height: 100%;
+                background: #4d5e70 bottom;
+            }
+        .right{
+                box-sizing: border-box;
+                float: left;
+                box-sizing: border-box;
+                padding-left: 200px;
+                overflow-y: overlay;
+                overflow-x: hidden;
+                clear: both;
+                color: #717592;
+                min-width: 100%;
+                min-height: 500px;
+            }
+    </style>
+  </head>
+  <script src="../js/jquery.min.js"></script>
+  <script src="../bootstrap/js/bootstrap.min.js"></script>
+  <script src="../treeview/bootstrap-treeview.js"></script>
+  <script>
+  	$(function(){
+  		init();
+  	})
+  	function init(){
+  		var treeData = [
+  		  {
+  		    text: "Parent 1",
+  		    
+  		    
+  		  },
+  		  {
+  		    text: "Parent 2",
+  	  		href: "http://baidu.com"
 
+  		  }
+  		];
+  		$('#tree').treeview({
+  			data: treeData,
+  			onNodeSelected:function(event,data){
+  				console.log("data:"+data);
+  			}
+  		});
 
-
-<body>
-<div class="container-fluid">
-	<div class="left">top</div>
-	<div class="right">
-		<div class="row" id="pathDivId"><span>路径指示</span></div>
-		<div class="row" id="mainDivId"></div>
+  	}
+  </script>
+  <body>
+  	<div>head</div>
+  	<div>
+		<div class = "left" id ="mainLeftId"> 
+			<div id="tree"></div>
+		</div>
+		<div class = "right" id = "mainRightId">
+			<ul class="nav nav-tabs" id = "mainRightNavId">
+			  <li role="presentation" class="active"><a href="#">Home</a></li>
+			  <li role="presentation"><a href="#">Profile</a></li>
+			  <li role="presentation"><a href="#">Messages</a></li>
+			</ul>
+		</div>
 	</div>
-</div>
-</body>
-<script>
-	$(function(){
-		
-	})
-	function click(){
-		console.log("aaa");
-		console.log($("#contentId"));
-		$("#contentId").load("http://baidu.com");
-		console.log('bbb');
-	}
-</script>
+  </body>
 </html>

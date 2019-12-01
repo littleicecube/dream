@@ -1,30 +1,41 @@
 ---
-main: dream-web
+main: com.palace.web.DreamMainApp
 ---
 server:
-  port: 8009
+  port: 80
 spring:
   application:
-    name: dream-web
+    name: DreamMainApp
+  profiles:
+    active: "@profileActive@"
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
   datasource:
-    name: dream-web
     type: com.alibaba.druid.pool.DruidDataSource
-    druid:
-      max-pool-prepared-statement-per-connection-size: 20
-      min-idle: 1
-      max-open-prepared-statements: 50
-      max-active: 100
-      test-while-idle: true
-      time-between-eviction-runs-millis: 60000
-      validation-query: select 'x'
+    db0:
+      maxPoolPreparedStatementPerConnectionSize: 20
+      minIdle: 1
+      maxOpenPreparedStatements: 50
+      maxActive: 100
+      testWhileIdle: true
+      timeBetweenEvictionRunsMillis: 60000
+      validationQuery: select 'x'
       filters: stat,log4j,config
-      max-wait: 60000
-      url: jdbc:mysql://68.168.137.110:3306/dream?useUnicode=true&autoReconnect=true&characterEncoding=UTF-8&socketTimeout=30000&connectTimeout=3000&allowMultiQueries=true
-      username: root
-      psma: 
-      test-on-borrow: false
-      pool-prepared-statements: true
-      initial-size: 1
-      min-evictable-idle-time-millis: 300000
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      test-on-return: false
+      maxWait: 60000
+      url: "@mysql0.url@"
+      username: "@mysql0.username@"
+      password: "@mysql0.password@"
+      testOnBorrow: true
+      poolPreparedStatements: true
+      InitialSize: 1
+      minEvictableIdleTimeMillis: 300000
+      driverClassName: com.mysql.cj.jdbc.Driver
+      testOnReturn: false
+logging:
+  config: classpath:logback-spring.xml
+
+    
+
+  
+ 

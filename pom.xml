@@ -14,49 +14,44 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.1.0.RELEASE</version>
+    <version>2.1.7.RELEASE</version>
   </parent>
+    <profiles>
+        <profile>
+          <id>test</id>
+          <properties>
+              <profileActive>test</profileActive>
+              <mysql0.url><![CDATA[jdbc:mysql://xxxx:3306/dream_mysql?useUnicode=true&autoReconnect=true&characterEncoding=UTF-8&socketTimeout=30000&connectTimeout=3000&allowMultiQueries=true]]></mysql0.url>
+              <mysql0.username><![CDATA[dream_mysql]]></mysql0.username>
+              <mysql0.password><![CDATA[12345678]]></mysql0.password>            
+          </properties>
+      </profile>
+      <profile>
+          <id>beta</id>
+          <properties>
+          	  <profileActive>beta</profileActive>
+              <mysql0.url><![CDATA[jdbc:mysql://xxxx:3306/dream_mysql?useUnicode=true&autoReconnect=true&characterEncoding=UTF-8&socketTimeout=30000&connectTimeout=3000&allowMultiQueries=true]]></mysql0.url>
+              <mysql0.username><![CDATA[dream_mysql]]></mysql0.username>
+              <mysql0.password><![CDATA[12345678]]></mysql0.password>            
+          </properties>
+      </profile>
+      <profile>
+          <id>product</id>
+          <properties>
+      		  <profileActive>product</profileActive>
+              <mysql0.url><![CDATA[jdbc:mysql://xxxx:3306/dream_mysql?useUnicode=true&autoReconnect=true&characterEncoding=UTF-8&socketTimeout=30000&connectTimeout=3000&allowMultiQueries=true]]></mysql0.url>
+              <mysql0.username><![CDATA[dream_mysql]]></mysql0.username>
+              <mysql0.password><![CDATA[12345678]]></mysql0.password>            
+          </properties>
+      </profile>
+  </profiles>
 
   <dependencies>
-	<dependency>
-	    <groupId>com.alibaba</groupId>
-	    <artifactId>druid</artifactId>
-	    <version>1.1.19</version>
-	</dependency>
-	  <dependency>
-	    <groupId>mysql</groupId>
-	    <artifactId>mysql-connector-java</artifactId>
-	 </dependency>
-     <dependency>
-       <groupId>org.springframework.boot</groupId>
-       <artifactId>spring-boot-starter-test</artifactId>
-       <scope>test</scope>
-        </dependency>
      <dependency>
          <groupId>org.springframework.boot</groupId>
          <artifactId>spring-boot-starter-web</artifactId>
+         <version>2.1.0.RELEASE</version>
      </dependency>
-     <dependency>
-	    <groupId>org.springframework.boot</groupId>
-	    <artifactId>spring-boot-starter-data-jpa</artifactId>
-	</dependency>
-	<dependency>
-	    <groupId>org.springframework.boot</groupId>
-	    <artifactId>spring-boot-starter-aop</artifactId>
-	</dependency>
-
   </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+   
 </project>

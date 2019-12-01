@@ -1,26 +1,34 @@
 package com.dream.common;
 
-import com.dream.common.constant.CS;
+public class Result {
 
-public class Result<T> {
-
-	public int code;
-	public String msg;
-	public T data;
+	public static int CODE_SUCCESS = 0;
+	public static int CODE_ERROR = -1;
+	public static String MSG_SUCCESS = "success";
+	public static String MSG_ERROR = "error";
 	
-	public static <T> Result<T> succ(T data) {
-		Result ret = new Result();
-		ret.data =  data;
-		ret.setMsg(CS.ERROR_MSG);
-		ret.setCode(CS.ERROR);
-		return ret;
+	private int code;
+	private String msg;
+	private Object data;
+	
+	public Result(int code,String msg,Object data) {
+		this.code = code;
+		this.msg = msg;
+		this.data = data;
+	}
+	public static Result succ() {
+		return new Result(CODE_SUCCESS,MSG_SUCCESS,null);
+	}
+	public static Result succ(Object data) {
+		return new Result(CODE_SUCCESS,MSG_SUCCESS,data);
 	}
 	
 	public static Result err(String msg) {
-		Result ret = new Result();
-		ret.setMsg(msg);
-		ret.setCode(CS.ERROR);
-		return ret;
+		return new Result(CODE_ERROR,msg,null);
+	}
+	
+	public boolean isSucc() {
+		return code == CODE_SUCCESS;
 	}
 
 	public int getCode() {
@@ -39,11 +47,11 @@ public class Result<T> {
 		this.msg = msg;
 	}
 
-	public T getData() {
+	public Object getData() {
 		return data;
 	}
 
-	public void setData(T data) {
+	public void setData(Object data) {
 		this.data = data;
 	}
 	
