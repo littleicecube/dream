@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>登陆</title>
+  </head>
+  <script src="../js/jquery.min.js"></script>
+  <script>
+  	function cli2(){
+  		var data = {
+  				"name":"xiaoming"
+  		};
+  		var url2 = "http://10.13.20.63:58858/statistic/statisticByExperimentId";
+  		$.ajax({
+  	      	type: "post",
+  	      	url: url2,
+  	        dataType : "json",
+  	        data: JSON.stringify(data),
+  	      success: function (d) {
+  	        console.log(d);
+  	      },
+  	    error: function (XMLHttpRequest, textStatus, errorThrown) {
+   	  　　　　 console.log(textStatus);
+   	 		 console.log(errorThrown);
+   	  　　}
+  	    });
+  	}
+  	
+  	function cli1(){
+  		var data = {
+  				"name":"xiaoming"
+  		};
+  		var url1 = "http://10.13.20.88:10002/risk/manage/getMenu";
+  		$.ajax({
+  	      	type: "post",
+  	      	url: url1,
+  	        dataType : "json",
+  	        data: JSON.stringify(data),
+  	      success: function (d) {
+  	        console.log(d);
+  	      },
+  	     error: function (XMLHttpRequest, textStatus, errorThrown) {
+  	  　　　　 console.log(textStatus);
+  	 		 console.log(errorThrown);
+  	  　　}
+  	    });
+  	}
+  </script>
+  <body>
+ 	<a href="javascript:cli1()">cli1</a>
+ 	<a href="javascript:cli2()">cli2</a>
+  </body>
+</html>

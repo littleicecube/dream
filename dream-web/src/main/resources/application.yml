@@ -2,7 +2,7 @@
 main: com.palace.web.DreamMainApp
 ---
 server:
-  port: 80
+  port: 8099
 spring:
   application:
     name: DreamMainApp
