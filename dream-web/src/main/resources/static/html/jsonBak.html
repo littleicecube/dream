@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>index</title>
+  <link href="../plugin/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../plugin/treeview/bootstrap-treeview.css" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Lato, Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      background-color: #fff;
+    }
+
+    .wrap {
+      min-width: 100%;
+      position: absolute;
+      background: #eff3f6 bottom;
+      min-height: 100%;
+      overflow: hidden;
+    }
+
+    .header {
+      background-color: #205081;
+      min-height: 40px;
+    }
+
+    .left {
+      width: 200px;
+      height: 100%;
+      margin-left: 0px;
+      position: absolute;
+      box-sizing: border-box;
+      background: #d9edf7 bottom;
+    }
+
+    .right {
+      width: 100%;
+      height: 100%;
+      float: left;
+      position: absolute;
+      box-sizing: border-box;
+      box-sizing: border-box;
+      padding-left: 200px;
+      overflow-y: overlay;
+      overflow-x: hidden;
+      clear: both;
+
+    }
+
+    .cn-header {
+      height: 45px;
+      width: 100%;
+      background: #f5f5f5;
+      padding-top: 10px;
+      padding-left: 10px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .cn-body {
+      height: 100%;
+    }
+
+    .numDiv {
+      float: left;
+      width: 35px;
+      height: 100%;
+      margin-left: 5px;
+      position: absolute;
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+    }
+
+    .num {
+      padding-left: 12px;
+    }
+
+
+    .lines {
+      left: 5px;
+      width: 100%;
+      height: 100%;
+      outline: none;
+      overflow: hidden;
+      margin-top: 15px;
+      padding-left: 45px;
+      position: relative;
+      font: 18.0px Menlo;
+      border-top: 1px solid #ddd;
+    }
+
+    .line {
+      position: relative;
+      width: 100%;
+    }
+
+    .line-body {
+      overflow: auto;
+
+    }
+
+    .line-str {
+      color: #a11;
+    }
+  </style>
+</head>
+
+
+<body>
+  <div class="header">
+    head
+    head
+  </div>
+  <div>
+    <div class="left" id="mainLeftId">
+      <div id="tree"></div>
+    </div>
+    <!-- 右边主要数据区-->
+    <div class="right" id="mainRightId">
+
+      <div class="cn-header">
+        <span class="glyphicon glyphicon-pawn"></span><span>&nbsp;压缩</span>
+        <span>&nbsp;</span>
+        <span class="glyphicon glyphicon-user"></span><span>&nbsp;格式化</span>
+      </div>
+      <div class="cn-body">
+        <!--行号-->
+        <div id = "lineNumId" class="numDiv">
+           
+        </div>
+        <!--面板数据区-->
+        <div id="linesId" class="lines" contenteditable="true">
+          <!--每行数据-->
+          <!-- <div class="line">
+            <div class="line-body">
+              abcdef<span class="cn-tab">},{</span><span class="cn-str">name</span>
+            </div>
+          </div>
+          <div class="line">
+            <div class="line-body">
+              abcdef<span class="cn-tab">},{</span><span class="cn-str">name</span>
+            </div>
+          </div> -->
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script src="../js/jquery.min.js"></script>
+<script src="../plugin/bootstrap/js/bootstrap.min.js"></script>
+<script src="../plugin/treeview/bootstrap-treeview.js"></script>
+<script src="../js/json.js"></script>
+<script src="../js/bignumber.js"></script>
+<script src="../js/jquery.json.js"></script>
+<script>
+  $(function () {
+    init();
+    initJsonDiv();
+    jsonMethod();
+  })
+  function initJsonDiv() {
+    
+    $("#linesId").keyup(function () {
+      var text = $(this).text();
+      //text = "{\"link\":\"http://wwww.baidu.com\",\"ageA\":234,\"bjA\":false,\"tjA\":true,\"objB\":{\"nameB\":\"xiaomB\",\"ageB\":12.33,\"addrB\":\"bj\",\"dataA\":null},\"objc\":{\"nameC\":\"xC\",\"ageC\":12,\"addrC\":\"tj\"},\"name\":[{\"name\":\"xx\",\"arr\":[{\"name\":\"nn\",\"age\":23}],\"age\":12.3,\"addr\":\"beij\"},{\"name\":\"ar\",\"age\":4433.22,\"addr\":\"fsd\"}],\"salaA\":434.222}"; 
+      var data = JSONFormat.doFormat(text);
+      $(this).html(data.html);
+      $("#lineNumId").html(data.lineNumHtml);
+    });
+
+
+  }
+  function jsonMethod() {
+    var val = $("#linesId").text();
+
+  }
+
+  function init() {
+    var treeData = loadTreeData();
+    $('#tree').treeview({
+      data: treeData,
+      onNodeSelected: function (event, treeData) {
+        console.log("data:" + data);
+      }
+    });
+
+  }
+  function loadTreeData() {
+    var treeData = [
+      {
+        text: "JSON格式化",
+        icon: "glyphicon glyphicon-stop",
+      },
+      {
+        text: "XML格式化",
+        href: "http://baidu.com"
+
+      }
+    ];
+    return treeData;
+  }
+</script>
+
+</html>

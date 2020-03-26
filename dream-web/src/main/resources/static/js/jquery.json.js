@@ -137,9 +137,11 @@ JSONFormat.lineNumHtml = function (lineNum) {
     var lineNumArr = new Array();
     for (var i = 1; i < lineNum; i++) {
         if (i < 10) {
-            lineNumArr.push(' <div class="num">0' + i + '</div>');
-        } else {
-            lineNumArr.push(' <div class="num">' + i + '</div>');
+            lineNumArr.push('<div style="">00' + i + '</div>');
+        } else if(i<100){
+            lineNumArr.push('<div style="">0' + i + '</div>');
+        }else{
+            lineNumArr.push('<div style="">' + i + '</div>');
         }
     }
     return lineNumArr;
