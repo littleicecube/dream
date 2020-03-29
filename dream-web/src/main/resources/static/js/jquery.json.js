@@ -1,7 +1,6 @@
 var JSONFormat = {
     lineNum: 0,
-    _bigNums: [],
-    //html_fragment: ''
+    _bigNums: []
 }
 JSONFormat.format = function (object, indent_count) {
     var html_fragment = '';
@@ -66,7 +65,6 @@ JSONFormat._format_array = function (object, indent_count) {
         + tmp_array.join(',<br/>')
         + '<br/>' + this.indent_tab(indent_count - 1) + ']</span>';
 }
-
 JSONFormat._format_object = function (object, indent_count) {
     var tmp_array = [];
     for (var key in object) {

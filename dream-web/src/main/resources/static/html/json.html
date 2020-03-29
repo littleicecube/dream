@@ -16,28 +16,25 @@
   .cn-body {}
   .j-panel {
     background-color: #BBFFAA;
-    padding-left: 40px;
   }
   .j-ln {
-    width: 40px;
-    margin-left: -30px;
-    height: 100%;
-    position: absolute;
     float: left;
-    font: 18.0px Menlo;
-    /* font-family: "Courier New",Courier; */
-    /* background: #f5f5f5;
-    border: 1px solid #ddd; */
+    width: 50px;
+    height: 100%;
+    /* font: 18.0px Menlo; */
+    padding-left: 15px;
+    position: absolute;
+    border-right: 1px solid #ddd;
   }
   .j-data {
     float: left;
     height: 100%;
-    width: 100%;
+    width: calc(100% - 70px);
+    margin-left: 65px;
+    padding-left: 5px;
     outline: none;
     position: absolute;
-    font: 18.0px Menlo;
-    /* border-top: 1px solid #ddd; */
-    
+    /* overflow: hidden; */
   }
 
   .j-line {}
@@ -53,7 +50,8 @@
     <div class="cn-body">
       <div class="j-panel">
         <div id="lineNumId" class="j-ln"></div>
-        <div id="linesId" class="j-data" contenteditable="true"></div>
+        <div id="linesId" class="j-data" contenteditable="true">
+        </div>
       </div>
     </div>
   </div>
@@ -63,7 +61,7 @@
 <script src="../plugin/treeview/bootstrap-treeview.js"></script>
 <script src="../js/json.js"></script>
 <script src="../js/bignumber.js"></script>
-<script src="../js/jquery.json.js"></script>
+<script src="../js/jquery.jsonBak.js"></script>
 <script>
 
   $(function () {
@@ -73,21 +71,75 @@
     $("#linesId").keyup(function () {
       format();
     });
-    $("#lineNumId").html(JSONFormat.lineNumHtml(100));
+    $("#lineNumId").html(JSONFormat._lineNumHtml(100));
   }
+
+ var lastEle = null;
+ var lastBackground = null;
   function format() {
     var text = $("#linesId").text();
     console.log(text);
+    // text = text.replace(/&nbsp;/ig,'');
+    text=text.replace(/\s+/g,"");   
     var data = JSONFormat.doFormat(text);
     $("#linesId").html(data.html);
     $("#lineNumId").html(data.lineNumHtml);
+    var eles = $("#linesId").children();
+    for(var i=0;i<eles.length;i++){
+      var ele = eles[i];
+      $(ele).click(function(){
+        select(this);
+      });
+      $(ele).mousemove(function(){
+        if(lastEle != null && lastBackground != null){
+          $(lastEle).css("background",lastBackground);
+        }
+        lastEle = this;
+        lastBackground = $(this).css("background");
+        $(this).css("background","#5F9EA0");
+      });
+    }
   }
   function compress() {
     var text = $("#linesId").text();
-    console.log(text);
+
     var obj = $.parseJSON(text);
     var compressVal = JSON.stringify(obj);
     $("#lineNumId").html(compress);
+  }
+  function select(doc){
+    var attr = $(doc).attr('data-index');
+    if(attr == null){
+      return;
+    }
+    clearBackgroup();
+    var index = attr.substring(0,attr.indexOf("-"));
+    var startIndex = index+"-start";
+    var endIndex = index+"-end";
+    var eles = $("div[data-index='"+startIndex+"']").nextAll();
+    $("div[data-index='"+startIndex+"']").css("background","#AFEEEE");
+    for(var i=0;i<eles.length;i++){
+      var ele = eles[i];
+      $(ele).css("background","#AFEEEE");
+      var attr = $(ele).attr('data-index');
+      if(attr == endIndex || attr == startIndex){
+        return;
+      }
+    }
+  }
+  function getIndex(doc){
+    var eles = $(doc).nextAll();
+    for(var i=0;i<eles.length;i++){
+      var ele = eles[i];
+      var attr = $(ele).attr('data-index');
+      if(attr != null){
+        return attr.substring(0,attr.indexOf("-"));
+      }
+    }
+    return 1;
+  }
+  function clearBackgroup(){
+    $("#linesId").children().css("background", "");
   }
 </script>
 
