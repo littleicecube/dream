@@ -110,9 +110,9 @@ JSONFormat._format_array = function (keyHtml,object,indentCount) {
     var space = this.indent_tab(indentCount);
     var result = "<div data-index='"+ index +"-start'>" + space;
     if(keyHtml == null){
-        result +=  + "[</div>";
+        result +=  + "<span>[</span></div>";
     }else{
-        result += keyHtml + ":[</div>";
+        result += keyHtml + "<span>:[</span></div>";
     }
     this.lineNum++;
     for (var i = 0, size = object.length; i < size; i++) {
@@ -127,13 +127,13 @@ JSONFormat._format_array = function (keyHtml,object,indentCount) {
             this.lineNum++;
             var keyHtml = this.indent_tab(indentCount + 1); 
             var htmlFragment = this._simpleFormat(typeValue,objectValue);
-            var item = "<div>" + keyHtml + htmlFragment + ",</div>";
+            var item = "<div>" + keyHtml + htmlFragment + "<span>,</span></div>";
             result += item;
         }
     }
     result = this._replace(result);
     var endIndex = index+"-end";
-    result += "<div data-index='"+ endIndex +"'>" + space +"],</div>";
+    result += "<div data-index='"+ endIndex +"'>" + space +"<span>],</span></div>";
     this.lineNum++;
     return result;
 }
@@ -143,9 +143,9 @@ JSONFormat._format_object = function (lastKeyHtml,object,indentCount) {
     var startIndex = index+"-start";
     var result = "<div data-index='"+ startIndex +"'>" + space;
     if(lastKeyHtml == null){
-        result += "{</div>";
+        result += "<span>{</span></div>";
     }else{
-        result += lastKeyHtml + ":{</div>";
+        result += lastKeyHtml + "<span>:{</span></div>";
     }
     this.lineNum++;
     for (var key in object) {
@@ -160,12 +160,12 @@ JSONFormat._format_object = function (lastKeyHtml,object,indentCount) {
             this.lineNum++;
             var keyHtml = this.indent_tab(indentCount + 1) + spanKey; 
             var htmlFragment = this._simpleFormat(typeValue,objectValue);
-            var item = "<div>" + keyHtml + ":" +htmlFragment + ",</div>";
+            var item = "<div>" + keyHtml + "<span>:</span>" +htmlFragment + "<span>,</span></div>";
             result += item;
         }
     }
     result = this._replace(result);
-    result += "<div data-index='"+index+"-end'>" + space +"},</div>";
+    result += "<div data-index='"+index+"-end'>" + space +"<span>},<span></div>";
     //this.lineNum++;
     return result;
 }

@@ -67,6 +67,7 @@
   $(function () {
     initJson();
   })
+
   function initJson() {
     $("#linesId").keyup(function () {
       format();
@@ -77,10 +78,10 @@
  var lastEle = null;
  var lastBackground = null;
   function format() {
-    var text = $("#linesId").text();
-    console.log(text);
+    var text = getSpanText();
+    //console.log(text);
     // text = text.replace(/&nbsp;/ig,'');
-    text=text.replace(/\s+/g,"");   
+    //text = text.replace(/\s+/g,"");   
     var data = JSONFormat.doFormat(text);
     $("#linesId").html(data.html);
     $("#lineNumId").html(data.lineNumHtml);
@@ -100,6 +101,19 @@
       });
     }
   }
+
+  function getSpanText(){
+    var text = "";
+    $.each($("#linesId").find("span"),function(i,ele){
+      text+=ele.innerHTML;
+    });
+    if(text.replace(/\s+/g,"") == ""){
+      text = $("#linesId").text();
+    }
+   console.log(text);
+   return text;
+  }
+
   function compress() {
     var text = $("#linesId").text();
 
