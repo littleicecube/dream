@@ -25,7 +25,7 @@ JSONFormat._typeof = function (object) {
 JSONFormat._loadCssString = function () {
     var code = '.json_key{color: #a11;font-weight:bold;}';
     code += '.json_null{color: #219;font-weight:bold;}';
-    code += '.json_string{ color: #a11;font-weight:bold;}';
+    code += '.json_string{ color: #8B1C62;font-weight:bold;}';
     code += '.json_number{ color: #164;font-weight:bold;}';
     code += '.json_boolean{ color: #219;font-weight:bold;}';
     code += '.json_link{ color: #219;font-weight:bold;}';
@@ -64,21 +64,42 @@ JSONFormat._lineNumHtml = function (lineNum) {
     var lineNumArr = new Array();
     for (var i = 1; i < lineNum; i++) {
         if (i < 10) {
-            lineNumArr.push('<div style="">00' + i + '</div>');
+            lineNumArr.push('<div class="j-ln-data"><code>000' + i + '</code></div>');
         } else if(i<100){
-            lineNumArr.push('<div style="">0' + i + '</div>');
+            lineNumArr.push('<div class="j-ln-data"><code>00' + i + '</code></div>');
+        }else if(i<1000){
+            lineNumArr.push('<div class="j-ln-data"><code>0' + i + '</code></div>');
         }else{
-            lineNumArr.push('<div style="">' + i + '</div>');
+            lineNumArr.push('<div class="j-ln-data"><code>' + i + '</code></div>');
         }
     }
     return lineNumArr;
 }
 JSONFormat._replace = function(result){
     var len = result.length;
-    if(len > 7){
-        var endString = result.substring(len-7,len);
-        if(endString == ",</div>"){
-            result = result.substring(0,result.length-7)+"</div>"; 
+    var endStrA = "<span>,</span></div>";
+    var lenA = endStrA.length;
+    if(len > lenA){
+        var endString = result.substring(len-lenA,len);
+        if(endString == endStrA){
+            return result.substring(0,len-lenA)+"</div>";
+        }
+            
+    }
+    var endStrB = "<span>],</span></div>";
+    var lenB = endStrB.length;
+    if(len > lenB){
+        var endString = result.substring(len-lenB,len);
+        if(endString == endStrB){
+            return result.substring(0,len-lenB)+"<span>]</span></div>";
+        }
+    }
+    var endStrC = "<span>},</span></div>";
+    var lenC = endStrC.length;
+    if(len > lenC){
+        var endString = result.substring(len-lenC,len);
+        if(endString == endStrC){
+            return result.substring(0,len-lenC)+"<span>}</span></div>";
         }
     }
     return result;
@@ -96,9 +117,6 @@ JSONFormat._simpleFormat = function (typeValue,objValue) {
         objValue = objValue.replace(/ /g, "&nbsp;");
         objValue = objValue.replace(/\</g, "&lt;");
         objValue = objValue.replace(/\>/g, "&gt;");
-        if (0 <= objValue.search(/^http/) || 0 <= objValue.search(/^https/) ) {
-            objValue = '<a href="' + objValue + '" target="_blank" class="json_link">' + objValue + '</a>'
-        }
         htmlFragment = '<span class="json_string">"' + objValue + '"</span>';
     }
     return htmlFragment;
@@ -151,7 +169,7 @@ JSONFormat._format_object = function (lastKeyHtml,object,indentCount) {
     for (var key in object) {
         var objectValue = object[key];
         var typeValue = this._typeof(objectValue);
-        var spanKey = '<span class="json_key">"' + key + '"</span>' ;
+        var spanKey = '<span class="json_key">' + key + '</span>' ;
         if("Object" == typeValue){
             result += this._format_object(spanKey,objectValue,indentCount + 2);
         }else if("Array" == typeValue){
@@ -165,7 +183,7 @@ JSONFormat._format_object = function (lastKeyHtml,object,indentCount) {
         }
     }
     result = this._replace(result);
-    result += "<div data-index='"+index+"-end'>" + space +"<span>},<span></div>";
+    result += "<div data-index='"+index+"-end'>" + space +"<span>},</span></div>";
     //this.lineNum++;
     return result;
 }

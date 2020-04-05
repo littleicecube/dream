@@ -10,78 +10,99 @@
   .cn-header {
     height: 45px;
     width: 100%;
-    background: #f5f5f5;
+    background-color: #f5f5f5;
     border-bottom: 1px solid #ccc;
   }
-  .cn-body {}
-  .j-panel {
-    background-color: #BBFFAA;
+  .cn-title{
+    font-weight: 600;
+    /* border: 1px solid; */
+    padding-top: 12px;
+    margin-left: 12%;
+    margin-right: 5px;
   }
-  .j-ln {
+
+  .cn-body {
+    font-size: 18px;
+  }
+  .j-line-num {
     float: left;
     width: 50px;
     height: 100%;
-    /* font: 18.0px Menlo; */
-    padding-left: 15px;
     position: absolute;
+  }
+  .j-ln-data {
     border-right: 1px solid #ddd;
   }
   .j-data {
     float: left;
     height: 100%;
-    width: calc(100% - 70px);
-    margin-left: 65px;
-    padding-left: 5px;
+    width: calc(100% - 60px);
+    margin-left: 50px;
     outline: none;
     position: absolute;
-    /* overflow: hidden; */
+  }
+  .j-line {
+
   }
 
-  .j-line {}
+  .back{
+    background-color:#FFFAFA;
+    width:100%; 
+    height:30px; 
+    position: fixed; 
+    bottom:50px;
+    margin-left: 50px;
+    opacity:0.3;
+  }
+
 </style>
 
 <body style="margin: 0px;">
   <div class="main">
     <div class="cn-header">
-      <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-      <span class="glyphicon glyphicon-pawn"></span><span><a href="javascript:format()">格式化</a></span>
-      <span class="glyphicon glyphicon-pawn"></span><span><a href="javascript:compress()">压缩</a></span>
-    </div>
-    <div class="cn-body">
-      <div class="j-panel">
-        <div id="lineNumId" class="j-ln"></div>
-        <div id="linesId" class="j-data" contenteditable="true">
-        </div>
+      <div class="cn-title">
+        <span>格式化</span>
+        <span>压缩</span>
       </div>
     </div>
+    <div class="cn-body">
+        <div id="lineNumId" class="j-line-num"></div>
+        <div id="linesId" class="j-data" contenteditable="plaintext-only"></div>
+        <div class = "back"><div style="position:fixed;right:50px"><a href="javascript:scrollTopFunc()" style="font-weight:600">返回顶部</a></div></div>
+    </div>
+
   </div>
 </body>
 <script src="../js/jquery.min.js"></script>
 <script src="../plugin/bootstrap/js/bootstrap.min.js"></script>
 <script src="../plugin/treeview/bootstrap-treeview.js"></script>
 <script src="../js/json.js"></script>
-<script src="../js/bignumber.js"></script>
 <script src="../js/jquery.jsonBak.js"></script>
 <script>
 
   $(function () {
     initJson();
   })
-
+  
   function initJson() {
     $("#linesId").keyup(function () {
       format();
     });
-    $("#lineNumId").html(JSONFormat._lineNumHtml(100));
+    $("window").click(function(){
+      console.log("aa")
+    });
+    var initLineNum = 60;
+    $("#linesId").focus();
+    $("#lineNumId").html(JSONFormat._lineNumHtml(initLineNum));
   }
-
+  function scrollTopFunc(){
+    $(window).scrollTop(0); 
+    $("#linesId").focus();
+  }
  var lastEle = null;
  var lastBackground = null;
   function format() {
     var text = getSpanText();
-    //console.log(text);
-    // text = text.replace(/&nbsp;/ig,'');
-    //text = text.replace(/\s+/g,"");   
     var data = JSONFormat.doFormat(text);
     $("#linesId").html(data.html);
     $("#lineNumId").html(data.lineNumHtml);
@@ -97,7 +118,7 @@
         }
         lastEle = this;
         lastBackground = $(this).css("background");
-        $(this).css("background","#5F9EA0");
+        $(this).css("background","#D6D6D6");
       });
     }
   }
@@ -110,7 +131,6 @@
     if(text.replace(/\s+/g,"") == ""){
       text = $("#linesId").text();
     }
-   console.log(text);
    return text;
   }
 
@@ -131,13 +151,14 @@
     var startIndex = index+"-start";
     var endIndex = index+"-end";
     var eles = $("div[data-index='"+startIndex+"']").nextAll();
-    $("div[data-index='"+startIndex+"']").css("background","#AFEEEE");
+    $("div[data-index='"+startIndex+"']").css("background","#E0EEE0");
     for(var i=0;i<eles.length;i++){
       var ele = eles[i];
-      $(ele).css("background","#AFEEEE");
+      $(ele).css("background","#E0EEE0");
       var attr = $(ele).attr('data-index');
       if(attr == endIndex || attr == startIndex){
-        return;
+        lastEle = null;
+        break;
       }
     }
   }
