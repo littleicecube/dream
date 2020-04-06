@@ -12,34 +12,42 @@
     width: 100%;
     background-color: #f5f5f5;
     border-bottom: 1px solid #ccc;
+    position:fixed;
+    z-index:999;
   }
   .cn-title{
+    float: right;
     font-weight: 600;
-    /* border: 1px solid; */
     padding-top: 12px;
-    margin-left: 12%;
+    margin-right: 12%; 
+ 
+  }
+  .cn-btn{
+    text-decoration : none;
+    color:#000000;  
+    margin-left: 5px;
     margin-right: 5px;
   }
 
   .cn-body {
     font-size: 18px;
+    position: relative;
+    top: 50px;
   }
   .j-line-num {
     float: left;
     width: 50px;
     height: 100%;
-    position: absolute;
+    position: relative;
   }
   .j-ln-data {
     border-right: 1px solid #ddd;
   }
   .j-data {
-    float: left;
     height: 100%;
     width: calc(100% - 60px);
     margin-left: 50px;
     outline: none;
-    position: absolute;
   }
   .j-line {
 
@@ -50,7 +58,7 @@
     width:100%; 
     height:30px; 
     position: fixed; 
-    bottom:50px;
+    bottom:150px;
     margin-left: 50px;
     opacity:0.3;
   }
@@ -61,14 +69,16 @@
   <div class="main">
     <div class="cn-header">
       <div class="cn-title">
-        <span>格式化</span>
-        <span>压缩</span>
+        <span><a class="cn-btn" href="javascript:insertSql()">压缩</a></span>
+        <span><a class="cn-btn" href="javascript:insertSql()">创建INSERT</a></span>
+        <span><a class="cn-btn" href="javascript:updateSql()">创建UPDATE</a></span>
+        <span><a class="cn-btn" href="javascript:updateSql()">关于</a></span>
       </div>
     </div>
     <div class="cn-body">
         <div id="lineNumId" class="j-line-num"></div>
         <div id="linesId" class="j-data" contenteditable="plaintext-only"></div>
-        <div class = "back"><div style="position:fixed;right:50px"><a href="javascript:scrollTopFunc()" style="font-weight:600">返回顶部</a></div></div>
+        <div class = "back"><div style="position:fixed;right:50px"><a class="cn-btn" href="javascript:scrollTopFunc()" style="font-weight:600">返回顶部</a></div></div>
     </div>
 
   </div>
@@ -79,7 +89,9 @@
 <script src="../js/json.js"></script>
 <script src="../js/jquery.jsonBak.js"></script>
 <script>
+function insertSql(){
 
+}
   $(function () {
     initJson();
   })
@@ -88,10 +100,13 @@
     $("#linesId").keyup(function () {
       format();
     });
-    $("window").click(function(){
-      console.log("aa")
+    $("html").click(function(){
+      var text = getSpanText();
+      if(text == null || text == ""){
+        $("#linesId").focus();
+      }
     });
-    var initLineNum = 60;
+    var initLineNum = 150;
     $("#linesId").focus();
     $("#lineNumId").html(JSONFormat._lineNumHtml(initLineNum));
   }
