@@ -169,7 +169,7 @@ JSONFormat._format_object = function (lastKeyHtml,object,indentCount) {
     for (var key in object) {
         var objectValue = object[key];
         var typeValue = this._typeof(objectValue);
-        var spanKey = '<span class="json_key">' + key + '</span>' ;
+        var spanKey = '<span class="json_key">"' + key + '"</span>' ;
         if("Object" == typeValue){
             result += this._format_object(spanKey,objectValue,indentCount + 2);
         }else if("Array" == typeValue){
