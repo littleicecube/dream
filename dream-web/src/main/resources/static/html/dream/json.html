@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+  <title>JSON格式化</title>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="../../plugin/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <style>
   .main{}
+  div code{}
   .cn-header {
     height: 45px;
     width: 100%;
@@ -49,18 +52,27 @@
     margin-left: 50px;
     outline: none;
   }
-  .j-line {
-
-  }
-
+  .j-line {}
   .back{
     background-color:#FFFAFA;
     width:100%; 
     height:30px; 
     position: fixed; 
-    bottom:150px;
+    bottom:250px;
     margin-left: 50px;
     opacity:0.3;
+  }
+  .modal-overlay {
+    width:100%;
+    height:270px;
+    visibility: hidden;    
+    position:fixed;
+    bottom:5px;
+    margin-left:50px;
+    text-align:center;
+    z-index: 1000;
+    background-color: #FFFAF0; 
+    opacity: 0.9;  
   }
 
 </style>
@@ -69,19 +81,22 @@
   <div class="main">
     <div class="cn-header">
       <div class="cn-title">
-        <span><a class="cn-btn" href="html/dream/main.html">主页</a></span>
+        <span><a class="cn-btn" href="main.html">主页</a></span>
         <span><a class="cn-btn" href="javascript:insertSql()">压缩</a></span>
-        <span><a class="cn-btn" href="javascript:insertSql()">创建INSERT</a></span>
-        <span><a class="cn-btn" href="javascript:updateSql()">创建UPDATE</a></span>
-        <span><a class="cn-btn" href="javascript:updateSql()">关于</a></span>
+        <span><a class="cn-btn" href="javascript:insertSql()">SQL:插入</a></span>
+        <span><a class="cn-btn" href="javascript:updateSql()">SQL:更新</a></span>
+        <span><a class="cn-btn" href="about.html">关于</a></span>
       </div>
     </div>
     <div class="cn-body">
         <div id="lineNumId" class="j-line-num"></div>
         <div id="linesId" class="j-data" contenteditable="plaintext-only"></div>
-        <div class = "back"><div style="position:fixed;right:50px"><a class="cn-btn" href="javascript:scrollTopFunc()" style="font-weight:600">返回顶部</a></div></div>
+        <div class = "back"><div style="position:fixed;right:150px"><a class="cn-btn" href="javascript:scrollTopFunc()" style="font-weight:600">返回顶部</a></div></div>
     </div>
-
+  </div>
+  <div id="myModal" class="modal-overlay">
+    <div style="background-color:#0000FF;"><a  href="" style="font-weight:600;color:#000000;">关闭</a></div>
+    <div><span id="sqlInsertId" style="font-weight:900;color:#000000"></span></div>
   </div>
 </body>
 <script src="../../js/jquery.min.js"></script>
@@ -90,9 +105,48 @@
 <script src="../../js/json.js"></script>
 <script src="../../js/jquery.jsonBak.js"></script>
 <script>
-function insertSql(){
-
-}
+  function insertSql(){
+      var text = "";
+      $.each($("#linesId").find("[data-select='select']"),function(i,ele){
+        text+=$(ele).find("span").text();
+      });
+      if(text.replace(/\s+/g,"") == ""){
+         
+      }
+      console.log(text);
+      var object = JSON.parse(text, (key, value) => {
+            if (typeof value !== 'string') {
+                return value;
+            }
+            if (value.startsWith('jsondotcnprefix')) {
+                value = value.slice('jsondotcnprefix'.length);
+                //return new BigNumber(value);
+                return Number(value);
+            }
+            return value;
+        });
+        var sqlKey =" (";
+        var sqlValue = " values(";
+        for (var key in object) {
+            sqlKey = sqlKey+"`"+key+"`,";
+            var objectValue = object[key];
+            var typeValue = this._typeof(objectValue);
+            if( "Null" == typeValue){
+               sqlValue = sqlValue+" null,";
+            }else if("Boolean" == typeValue){
+              sqlValue = sqlValue + objectValue +" ,";
+            }else if("Number" == typeValue){
+              sqlValue = sqlValue + objectValue +" ,";
+            }else if("String" == typeValue){
+              sqlValue = sqlValue + "'"+objectValue +"' ,";
+            }
+        }
+      var sql = sqlKey.substring(0,sqlKey.length-1)+") "+sqlValue.substring(0,sqlValue.length-1)+")";
+      console.log(sql);
+      $("#sqlInsertId").text(sql);
+      var e1 = document.getElementById('myModal');          
+      e1.style.visibility = "visible"
+  }
   $(function () {
     initJson();
   })
@@ -115,8 +169,8 @@ function insertSql(){
     $(window).scrollTop(0); 
     $("#linesId").focus();
   }
- var lastEle = null;
- var lastBackground = null;
+  var lastEle = null;
+  var lastBackground = null;
   function format() {
     var text = getSpanText();
     var data = JSONFormat.doFormat(text);
@@ -142,7 +196,7 @@ function insertSql(){
   function getSpanText(){
     var text = "";
     $.each($("#linesId").find("span"),function(i,ele){
-      text+=ele.innerHTML;
+      text+=$(ele).text();
     });
     if(text.replace(/\s+/g,"") == ""){
       text = $("#linesId").text();
@@ -152,7 +206,6 @@ function insertSql(){
 
   function compress() {
     var text = $("#linesId").text();
-
     var obj = $.parseJSON(text);
     var compressVal = JSON.stringify(obj);
     $("#lineNumId").html(compress);
@@ -166,12 +219,15 @@ function insertSql(){
     var index = attr.substring(0,attr.indexOf("-"));
     var startIndex = index+"-start";
     var endIndex = index+"-end";
+    var jCurr = $("div[data-index='"+startIndex+"']");
+    jCurr.css("background","#E0EEE0");
+    jCurr.attr("data-select","select");
     var eles = $("div[data-index='"+startIndex+"']").nextAll();
-    $("div[data-index='"+startIndex+"']").css("background","#E0EEE0");
     for(var i=0;i<eles.length;i++){
-      var ele = eles[i];
-      $(ele).css("background","#E0EEE0");
-      var attr = $(ele).attr('data-index');
+      var jele = $(eles[i]);
+      jele.css("background","#E0EEE0");
+      jele.attr("data-select","select");
+      var attr = jele.attr('data-index');
       if(attr == endIndex || attr == startIndex){
         lastEle = null;
         break;
@@ -191,7 +247,22 @@ function insertSql(){
   }
   function clearBackgroup(){
     $("#linesId").children().css("background", "");
+    $.each($("#linesId").children(),function(i,ele){
+      $(ele).attr("data-select","");
+    });
   }
+  function _typeof(object) {
+    var tf = typeof object,
+        ts = new Object().toString.call(object);
+    return null === object ? 'Null' :
+        'undefined' == tf ? 'Undefined' :
+            'boolean' == tf ? 'Boolean' :
+                'number' == tf ? 'Number' :
+                    'string' == tf ? 'String' :
+                        '[object Function]' == ts ? 'Function' :
+                            '[object Array]' == ts ? 'Array' :
+                                '[object Date]' == ts ? 'Date' : 'Object';
+}
 </script>
 
 
