@@ -100,4 +100,5 @@ public class SimpleTemplate extends JdbcTemplate{
 			System.err.println(line);
 		}
 	}
+	
 }
