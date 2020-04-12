@@ -56,7 +56,7 @@ JSONFormat._parseData = function (origin_data) {
         });
         return temp;
     } catch (e) {
-        return "";
+        return JSON.parse(origin_data);
     }
 }
 JSONFormat._lineNumHtml = function (lineNum) {
