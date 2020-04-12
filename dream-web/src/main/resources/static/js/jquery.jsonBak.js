@@ -170,8 +170,10 @@ JSONFormat._format_object = function (lastKeyHtml,object,indentCount) {
         var typeValue = this._typeof(objectValue);
         var spanKey = '<span class="json_key">"' + key + '"</span>' ;
         if("Object" == typeValue){
+            this.lineNum++;
             result += this._format_object(spanKey,objectValue,indentCount + 2);
         }else if("Array" == typeValue){
+            this.lineNum++;
             result += this._format_array(spanKey,objectValue,indentCount + 2);
         }else{
             this.lineNum++;
@@ -183,7 +185,7 @@ JSONFormat._format_object = function (lastKeyHtml,object,indentCount) {
     }
     result = this._replace(result);
     result += "<div data-index='"+index+"-end'>" + space +"<span>},</span></div>";
-    //this.lineNum++;
+    this.lineNum++;
     return result;
 }
 JSONFormat._mainFormat = function(data){
@@ -203,8 +205,8 @@ JSONFormat._mainFormat = function(data){
 }
 
 JSONFormat.doFormat = function (data) {
-    //var val ="{\"tbk_item_info_get_response\":{\"results\":{\"n_tbk_item\":[{\"presale_end_time\":0,\"zk_final_price\":\"59.8\",\"num_iid\":612753009933,\"title\":\"华涛红糖姜茶大姨妈伴侣气血体宫寒黑糖水冲饮小袋装姜汤调理参茶\",\"presale_tail_start_time\":0,\"nick\":\"华涛食品旗舰店\",\"material_lib_type\":\"1,2\",\"presale_tail_end_time\":0,\"presale_deposit\":\"0\",\"user_type\":1,\"ju_online_end_time\":\"0\",\"ju_pre_show_start_time\":\"0\",\"ju_online_start_time\":\"0\",\"seller_id\":2207357987647,\"ju_pre_show_end_time\":\"0\",\"tmall_play_activity_end_time\":0,\"cat_name\":\"咖啡/麦片/冲饮\",\"cat_leaf_name\":\"姜汤\",\"presale_start_time\":0,\"pict_url\":\"https://img.alicdn.com/bao/uploaded/i3/2207357987647/O1CN01j1Ey7026MNJBo5apf_!!0-item_pic.jpg\",\"tmall_play_activity_start_time\":0,\"volume\":103251,\"provcity\":\"重庆\",\"item_url\":\"https://detail.tmall.com/item.htm?id=612753009933\",\"reserve_price\":\"129\"},{\"presale_end_time\":0,\"zk_final_price\":\"79.98\",\"num_iid\":601301532454,\"title\":\"志高电热饭盒保温可插电自动加热带热饭菜神器蒸煮桶便当上班族锅\",\"presale_tail_start_time\":0,\"nick\":\"志高生活日记专卖店\",\"material_lib_type\":\"1,2\",\"presale_tail_end_time\":0,\"presale_deposit\":\"0\",\"user_type\":1,\"ju_online_end_time\":\"0\",\"ju_pre_show_start_time\":\"0\",\"ju_online_start_time\":\"0\",\"seller_id\":4277520934,\"ju_pre_show_end_time\":\"0\",\"tmall_play_activity_end_time\":0,\"cat_name\":\"厨房电器\",\"cat_leaf_name\":\"电热饭盒\",\"presale_start_time\":0,\"pict_url\":\"https://img.alicdn.com/bao/uploaded/i1/4277520934/O1CN01sTkBBd1IloW8p58dO_!!0-item_pic.jpg\",\"tmall_play_activity_start_time\":0,\"volume\":3707,\"provcity\":\"广东 中山\",\"item_url\":\"https://detail.tmall.com/item.htm?id=601301532454\",\"reserve_price\":\"199\"}]},\"request_id\":\"p0ik9no7svsg\"}}";
-    //data = val;
+    var val ="{\"tbk_item_info_get_response\":{\"results\":{\"n_tbk_item\":[{\"presale_end_time\":0,\"zk_final_price\":\"59.8\",\"num_iid\":612753009933,\"title\":\"华涛红糖姜茶大姨妈伴侣气血体宫寒黑糖水冲饮小袋装姜汤调理参茶\",\"presale_tail_start_time\":0,\"nick\":\"华涛食品旗舰店\",\"material_lib_type\":\"1,2\",\"presale_tail_end_time\":0,\"presale_deposit\":\"0\",\"user_type\":1,\"ju_online_end_time\":\"0\",\"ju_pre_show_start_time\":\"0\",\"ju_online_start_time\":\"0\",\"seller_id\":2207357987647,\"ju_pre_show_end_time\":\"0\",\"tmall_play_activity_end_time\":0,\"cat_name\":\"咖啡/麦片/冲饮\",\"cat_leaf_name\":\"姜汤\",\"presale_start_time\":0,\"pict_url\":\"https://img.alicdn.com/bao/uploaded/i3/2207357987647/O1CN01j1Ey7026MNJBo5apf_!!0-item_pic.jpg\",\"tmall_play_activity_start_time\":0,\"volume\":103251,\"provcity\":\"重庆\",\"item_url\":\"https://detail.tmall.com/item.htm?id=612753009933\",\"reserve_price\":\"129\"},{\"presale_end_time\":0,\"zk_final_price\":\"79.98\",\"num_iid\":601301532454,\"title\":\"志高电热饭盒保温可插电自动加热带热饭菜神器蒸煮桶便当上班族锅\",\"presale_tail_start_time\":0,\"nick\":\"志高生活日记专卖店\",\"material_lib_type\":\"1,2\",\"presale_tail_end_time\":0,\"presale_deposit\":\"0\",\"user_type\":1,\"ju_online_end_time\":\"0\",\"ju_pre_show_start_time\":\"0\",\"ju_online_start_time\":\"0\",\"seller_id\":4277520934,\"ju_pre_show_end_time\":\"0\",\"tmall_play_activity_end_time\":0,\"cat_name\":\"厨房电器\",\"cat_leaf_name\":\"电热饭盒\",\"presale_start_time\":0,\"pict_url\":\"https://img.alicdn.com/bao/uploaded/i1/4277520934/O1CN01sTkBBd1IloW8p58dO_!!0-item_pic.jpg\",\"tmall_play_activity_start_time\":0,\"volume\":3707,\"provcity\":\"广东 中山\",\"item_url\":\"https://detail.tmall.com/item.htm?id=601301532454\",\"reserve_price\":\"199\"}]},\"request_id\":\"p0ik9no7svsg\"}}";
+    data = val;
     this.lineNum = 0;
     this._loadCssString();
     var html = this._mainFormat(data);

@@ -1,33 +1,37 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <title>JSON格式化</title>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="../../plugin/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <style>
-  .main{}
-  div code{}
+  .main {}
+
+  div code {}
+
   .cn-header {
     height: 45px;
     width: 100%;
     background-color: #f5f5f5;
     border-bottom: 1px solid #ccc;
-    position:fixed;
-    z-index:999;
+    position: fixed;
+    z-index: 999;
   }
-  .cn-title{
+
+  .cn-title {
     float: right;
     font-weight: 600;
     padding-top: 12px;
-    margin-right: 12%; 
- 
+    margin-right: 12%;
+
   }
-  .cn-btn{
-    text-decoration : none;
-    color:#000000;  
+
+  .cn-btn {
+    text-decoration: none;
+    color: #000000;
     margin-left: 5px;
     margin-right: 5px;
   }
@@ -37,209 +41,128 @@
     position: relative;
     top: 50px;
   }
+
   .j-line-num {
     float: left;
     width: 50px;
     height: 100%;
     position: relative;
   }
+
   .j-ln-data {
     border-right: 1px solid #ddd;
   }
+
   .j-data {
     height: 100%;
     width: calc(100% - 60px);
     margin-left: 50px;
     outline: none;
   }
+
   .j-line {}
-  .back{
-    background-color:#FFFAFA;
-    width:100%; 
-    height:30px; 
-    position: fixed; 
-    bottom:250px;
+
+  .back {
+    background-color: #FFFAFA;
+    width: 100%;
+    height: 30px;
+    position: fixed;
+    bottom: 250px;
     margin-left: 50px;
-    opacity:0.3;
+    opacity: 0.3;
   }
+
   .modal-dialog {
-    width:100%;
-    height:270px;
-    visibility: hidden;    
-    position:fixed;
-    bottom:1px;
+    width: 100%;
+    height: 270px;
+    visibility: hidden;
+    position: fixed;
+    overflow: scroll;
+    bottom: 1px;
     /* margin-left:50px; */
-    margin-top: 0px;
-    margin-bottom: 0px;
-    text-align:center;
+    padding-left: 5px;
+    padding-right: 20px;
+    /* text-align: center; */
     z-index: 1000;
-    background-color: #FFFAFA; 
-    opacity: 1.0;  
+    background-color: #FFFAFA;
+    opacity: 1.0;
   }
-.sql{
-  font-weight:900;
-  color:#000000;
-  overflow: scroll;
-  /* position:relative;
+
+  .console {
+    outline: none;
+    font-weight: 900;
+    color: #000000;
+    /* overflow: scroll; */
+    /* position:relative; */
+    /* float: left; */
+    /* white-space: nowrap; */
+  }
+
+  .sqlText {
+    /* position:relative;
   float: left; */
-}
-.sqlText{
-  /* position:relative;
-  float: left; */
-  width:100%; 
-  text-align:left;
-  display:inline-block;
-  overflow: scroll;
-}
+    /* width: 100%; */
+    /* text-align: left; */
+    /* display: inline-block; */
+    /* overflow: scroll; */
+    /* white-space: nowrap; */
+  }
 </style>
 
 <body style="margin: 0px;">
   <div class="main">
     <div class="cn-header">
       <div class="cn-title">
-        <span><a class="cn-btn" href="dream/main.html">主页</a></span>
-        <span><a class="cn-btn" href="javascript:insertSql()">压缩</a></span>
+        <span><a class="cn-btn" href="html/dream/main.html">主页</a></span>
+        <span><a class="cn-btn" href="javascript:compress()">压缩</a></span>
         <span><a class="cn-btn" href="javascript:insertSql()">SQL:插入</a></span>
-        <span><a class="cn-btn" href="javascript:updateSql()">SQL:更新</a></span>
-        <span><a class="cn-btn" href="dream/about.html">关于</a></span>
+        <!-- <span><a class="cn-btn" href="javascript:updateSql()">SQL:更新</a></span> -->
+        <span><a class="cn-btn" href="html/dream/about.html">关于</a></span>
       </div>
     </div>
     <div class="cn-body">
-        <div id="lineNumId" class="j-line-num"></div>
-        <div id="linesId" class="j-data" contenteditable="plaintext-only"></div>
-        <!--
+      <div id="lineNumId" class="j-line-num"></div>
+      <div id="linesId" class="j-data" contenteditable="plaintext-only"></div>
+      <!--
         <div class = "back"><div style="position:fixed;right:150px"><a class="cn-btn" href="javascript:scrollTopFunc()" style="font-weight:600">返回顶部</a></div></div>
         -->
     </div>
   </div>
   <div id="myModal" class="modal-dialog">
-    <div style="background-color:#f5f5f5;">
+    <div style="background-color:#f5f5f5">
       <span style="text-align:right;width:100%; display:inline-block;font-weight:600;color:#000000;min-height: 10px;">
         <!-- <a style="margin-right: 30px;">复制</a> -->
-        <!-- <a href ="javascript:closeDialog()" style="margin-right: 30px;">关闭</a> -->
-    </span>
+        <a href ="javascript:closeDialog()" style="margin-right:50px;text-decoration: none;">关闭</a>
+      </span>
     </div>
-    <div class="sql" id="sqlInsertId"></div>
+    <div class="console" id="consoleId" contenteditable="plaintext-only"></div>
   </div>
 </body>
-<script src="../../js/jquery.min.js"></script>
-<script src="../../plugin/bootstrap/js/bootstrap.min.js"></script>
-<script src="../../plugin/treeview/bootstrap-treeview.js"></script>
+<script src="https://cdn.bootcss.com/jquery/3.5.0/jquery.min.js"></script>
 <script src="../../js/json.js"></script>
 <script src="../../js/util.js"></script>
 <script src="../../js/jquery.jsonBak.js"></script>
 <script>
 
-  function closeDialog(){
-    $("#myModal").css("visibility","hidden")
-  }
-  //添加语句
-  function insertSql(){
-      var text = "";
-      $.each($("#linesId").find("[data-select='select']"),function(i,ele){
-        text+=$(ele).find("span").text();
-      });
-      text = text.replace(/\s+/g,"");
-      if( text == ""){
-         return;
-      }
-      text = _delEndWith(text,",");
-      if("{" != text.substring(0,1)){
-        var index = text.indexOf(":[");
-        if(index > 0){
-          text = text.substring(index+1,text.length);
-        }
-      }
-      var object = JSON.parse(text, (key, value) => {
-            if (typeof value !== 'string') {
-                return value;
-            }
-            if (value.startsWith('jsondotcnprefix')) {
-                value = value.slice('jsondotcnprefix'.length);
-                 return Number(value);
-            }
-            return value;
-        });
 
-      var sqlHtml = insert(object);
-      console.log(sqlHtml);
-      $("#sqlInsertId").html(sqlHtml);
-      var e1 = document.getElementById('myModal');          
-      e1.style.visibility = "visible"
-  }
-  
-  function insert(object){
-    var typeValue = this._typeof(object);
-    var result = "";
-    if("Object" == typeValue){
-        result += simpleInsertSql(object);
-    }else if("Array" == typeValue){
-      var sql = "<div class='sqlText'>INSERT INTO DBNAME.TBNAME</div>";
-      sql += "<div class='sqlText'>"+insertKey(object[0])+"</div>";
-      sql += "<div class='sqlText'>VALUES</div>";
-      for (var i = 0, size = object.length; i < size; i++) {
-        var obj = object[i];
-        if(i == object.length-1){
-          sql +="<div class='sqlText'>"+insertValue(obj)+"</div>";
-        }else{
-          sql +="<div class='sqlText'>"+insertValue(obj)+",</div>";
-        }
-      }
-      result = sql;
-    }
-    return result;
-  }
-  function simpleInsertSql(object){
-    var sql = "<div class='sqlText'>INSERT INTO DBNAME.TBNAME</div>";
-        sql += "<div class='sqlText'>"+insertKey(object)+"</div>";
-        sql += "<div class='sqlText'>VALUES</div>";
-        sql += "<div class='sqlText'>"+insertValue(object)+"</div>";
-    return sql;
-  }
-  function insertKey(object){
-    var sqlKey ="(";
-    for (var key in object) {
-        sqlKey = sqlKey+"`"+key+"`,";
-    }
-    sqlKey = sqlKey.substring(0,sqlKey.length-1)+") ";
-    return sqlKey;
-  }
-  function insertValue(object){
-    var sqlValue = "(";
-    for (var key in object) {
-        var objectValue = object[key];
-        var typeValue = this._typeof(objectValue);
-        if( "Null" == typeValue){
-            sqlValue = sqlValue+" null,";
-        }else if("Boolean" == typeValue){
-          sqlValue = sqlValue + objectValue +",";
-        }else if("Number" == typeValue){
-          sqlValue = sqlValue + objectValue +",";
-        }else if("String" == typeValue){
-          if(objectValue == "电热饭盒"){
-            console.log("aa");
-          }
-          sqlValue = sqlValue + "'"+objectValue +"',";
-        }else if("Array" == typeValue){
-          throw new Error("包含数组内容");
-        }
-    }
-    sqlValue = sqlValue.substring(0,sqlValue.length-1)+")";
-    return sqlValue;
-  }
   //初始化工作
   $(function () {
     initJson();
+    eventInit();
+  })
+  function eventInit() {
     //初始化页面的点击事件
-    $("html").click(function(){
+    $("html").click(function () {
       var text = getSpanText();
-      if(text == null || text == ""){
+      if (text == null || text == "") {
         $("#linesId").focus();
       }
+    });
+    $("#linesId").click(function(){
       closeDialog();
     });
-  })
-  
+  }
+
   function initJson() {
     $("#linesId").keyup(function () {
       format();
@@ -249,8 +172,8 @@
     $("#lineNumId").html(JSONFormat._lineNumHtml(initLineNum));
   }
   //返回顶部事件
-  function scrollTopFunc(){
-    $(window).scrollTop(0); 
+  function scrollTopFunc() {
+    $(window).scrollTop(0);
     $("#linesId").focus();
   }
   var lastEle = null;
@@ -261,81 +184,83 @@
     $("#linesId").html(data.html);
     $("#lineNumId").html(data.lineNumHtml);
     var eles = $("#linesId").children();
-    for(var i=0;i<eles.length;i++){
+    for (var i = 0; i < eles.length; i++) {
       var ele = eles[i];
-      $(ele).click(function(){
+      $(ele).click(function () {
         select(this);
       });
-      $(ele).mousemove(function(){
-        if(lastEle != null && lastBackground != null){
-          $(lastEle).css("background",lastBackground);
+      $(ele).mousemove(function () {
+        if (lastEle != null && lastBackground != null) {
+          $(lastEle).css("background", lastBackground);
         }
         lastEle = this;
         lastBackground = $(this).css("background");
-        $(this).css("background","#D6D6D6");
+        $(this).css("background", "#D6D6D6");
       });
     }
   }
   //获取格式化的内容
-  function getSpanText(){
+  function getSpanText() {
     var text = "";
-    $.each($("#linesId").find("span"),function(i,ele){
-      text+=$(ele).text();
+    $.each($("#linesId").find("span"), function (i, ele) {
+      text += $(ele).text();
     });
-    if(text.replace(/\s+/g,"") == ""){
+    if (text.replace(/\s+/g, "") == "") {
       text = $("#linesId").text();
     }
-   return text;
+    return text;
   }
   //压缩
   function compress() {
-    var text = $("#linesId").text();
+    var text = getSpanText();
     var obj = $.parseJSON(text);
     var compressVal = JSON.stringify(obj);
-    $("#lineNumId").html(compress);
+    compressVal +="<div>"+compressVal+"</div>";
+    showInDialog(compressVal);
+
   }
   //用背景颜色标记被选择的数据
-  function select(doc){
+  function select(doc) {
     var attr = $(doc).attr('data-index');
-    if(attr == null){
+    if (attr == null) {
       return;
     }
     clearBackgroup();
-    var index = attr.substring(0,attr.indexOf("-"));
-    var startIndex = index+"-start";
-    var endIndex = index+"-end";
-    var jCurr = $("div[data-index='"+startIndex+"']");
-    jCurr.css("background","#E0EEE0");
-    jCurr.attr("data-select","select");
-    var eles = $("div[data-index='"+startIndex+"']").nextAll();
-    for(var i=0;i<eles.length;i++){
+    var index = attr.substring(0, attr.indexOf("-"));
+    var startIndex = index + "-start";
+    var endIndex = index + "-end";
+    var jCurr = $("div[data-index='" + startIndex + "']");
+    jCurr.css("background", "#E0EEE0");
+    jCurr.attr("data-select", "select");
+    var eles = $("div[data-index='" + startIndex + "']").nextAll();
+    for (var i = 0; i < eles.length; i++) {
       var jele = $(eles[i]);
-      jele.css("background","#E0EEE0");
-      jele.attr("data-select","select");
+      jele.css("background", "#E0EEE0");
+      jele.attr("data-select", "select");
       var attr = jele.attr('data-index');
-      if(attr == endIndex || attr == startIndex){
+      if (attr == endIndex || attr == startIndex) {
         lastEle = null;
         break;
       }
     }
   }
   //获取没一个object的首行
-  function getIndex(doc){
+  function getIndex(doc) {
     var eles = $(doc).nextAll();
-    for(var i=0;i<eles.length;i++){
+    for (var i = 0; i < eles.length; i++) {
       var ele = eles[i];
       var attr = $(ele).attr('data-index');
-      if(attr != null){
-        return attr.substring(0,attr.indexOf("-"));
+      if (attr != null) {
+        return attr.substring(0, attr.indexOf("-"));
       }
     }
     return 1;
   }
   //清除背景颜色
-  function clearBackgroup(){
+  function clearBackgroup() {
     $("#linesId").children().css("background", "");
-    $.each($("#linesId").children(),function(i,ele){
-      $(ele).attr("data-select","");
+    $.each($("#linesId").children(), function (i, ele) {
+      $(ele).attr("data-select", "");
     });
   }
 
