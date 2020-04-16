@@ -8,7 +8,7 @@ JSONFormat.indent_tab = function (indent_count) {
     for(var i=1;i<=indent_count;i++){
         ret +=tmp;
     }
-   return ret;
+   return "<span class='j-blank' data-blank=0 >"+ret+"</span>";
 }
 JSONFormat._typeof = function (object) {
     var tf = typeof object,
@@ -24,12 +24,12 @@ JSONFormat._typeof = function (object) {
 }
 JSONFormat._loadCssString = function () {
     var code = '.json_key{color: #a11;font-weight:bold;}';
-    code += '.json_null{color: #219;font-weight:bold;}';
-    code += '.json_string{ color: #8B1C62;font-weight:bold;}';
-    code += '.json_number{ color: #164;font-weight:bold;}';
-    code += '.json_boolean{ color: #219;font-weight:bold;}';
-    code += '.json_link{ color: #219;font-weight:bold;}';
-    code += '.json_array_brackets{}';
+    code += '.j-null{color: #219;font-weight:bold;}';
+    code += '.j-string{ color: #8B1C62;font-weight:bold;}';
+    code += '.j-number{ color: #164;font-weight:bold;}';
+    code += '.j-boolean{ color: #219;font-weight:bold;}';
+    code += '.j-link{ color: #219;font-weight:bold;}';
+    code += '.j-array{}';
 
     var style = document.createElement('style');
     style.type = 'text/css';
@@ -108,16 +108,16 @@ JSONFormat._simpleFormat = function (typeValue,objValue) {
     var htmlFragment;
     var typeValue = this._typeof(objValue);
     if( "Null" == typeValue){
-        htmlFragment = '<span class="json_null">null</span>';
+        htmlFragment = '<span class="j-null">null</span>';
     }else if("Boolean" == typeValue){
-        htmlFragment = '<span class="json_boolean">' + objValue + '</span>';
+        htmlFragment = '<span class="j-boolean">' + objValue + '</span>';
     }else if("Number" == typeValue){
-        htmlFragment = '<span class="json_number">' + objValue + '</span>';
+        htmlFragment = '<span class="j-number">' + objValue + '</span>';
     }else if("String" == typeValue){
         objValue = objValue.replace(/ /g, "&nbsp;");
         objValue = objValue.replace(/\</g, "&lt;");
         objValue = objValue.replace(/\>/g, "&gt;");
-        htmlFragment = '<span class="json_string">"' + objValue + '"</span>';
+        htmlFragment = '<span class="j-string">"' + objValue + '"</span>';
     }
     return htmlFragment;
 }
@@ -206,7 +206,7 @@ JSONFormat._mainFormat = function(data){
 
 JSONFormat.doFormat = function (data) {
     var val ="{\"tbk_item_info_get_response\":{\"results\":{\"n_tbk_item\":[{\"presale_end_time\":0,\"zk_final_price\":\"59.8\",\"num_iid\":612753009933,\"title\":\"华涛红糖姜茶大姨妈伴侣气血体宫寒黑糖水冲饮小袋装姜汤调理参茶\",\"presale_tail_start_time\":0,\"nick\":\"华涛食品旗舰店\",\"material_lib_type\":\"1,2\",\"presale_tail_end_time\":0,\"presale_deposit\":\"0\",\"user_type\":1,\"ju_online_end_time\":\"0\",\"ju_pre_show_start_time\":\"0\",\"ju_online_start_time\":\"0\",\"seller_id\":2207357987647,\"ju_pre_show_end_time\":\"0\",\"tmall_play_activity_end_time\":0,\"cat_name\":\"咖啡/麦片/冲饮\",\"cat_leaf_name\":\"姜汤\",\"presale_start_time\":0,\"pict_url\":\"https://img.alicdn.com/bao/uploaded/i3/2207357987647/O1CN01j1Ey7026MNJBo5apf_!!0-item_pic.jpg\",\"tmall_play_activity_start_time\":0,\"volume\":103251,\"provcity\":\"重庆\",\"item_url\":\"https://detail.tmall.com/item.htm?id=612753009933\",\"reserve_price\":\"129\"},{\"presale_end_time\":0,\"zk_final_price\":\"79.98\",\"num_iid\":601301532454,\"title\":\"志高电热饭盒保温可插电自动加热带热饭菜神器蒸煮桶便当上班族锅\",\"presale_tail_start_time\":0,\"nick\":\"志高生活日记专卖店\",\"material_lib_type\":\"1,2\",\"presale_tail_end_time\":0,\"presale_deposit\":\"0\",\"user_type\":1,\"ju_online_end_time\":\"0\",\"ju_pre_show_start_time\":\"0\",\"ju_online_start_time\":\"0\",\"seller_id\":4277520934,\"ju_pre_show_end_time\":\"0\",\"tmall_play_activity_end_time\":0,\"cat_name\":\"厨房电器\",\"cat_leaf_name\":\"电热饭盒\",\"presale_start_time\":0,\"pict_url\":\"https://img.alicdn.com/bao/uploaded/i1/4277520934/O1CN01sTkBBd1IloW8p58dO_!!0-item_pic.jpg\",\"tmall_play_activity_start_time\":0,\"volume\":3707,\"provcity\":\"广东 中山\",\"item_url\":\"https://detail.tmall.com/item.htm?id=601301532454\",\"reserve_price\":\"199\"}]},\"request_id\":\"p0ik9no7svsg\"}}";
-    data = val;
+    //data = val;
     this.lineNum = 0;
     this._loadCssString();
     var html = this._mainFormat(data);

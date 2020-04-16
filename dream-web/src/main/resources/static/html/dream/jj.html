@@ -32,6 +32,29 @@
       <div>219</div>
     </div>
     <div class="js-data" contenteditable = "plaintext-only">adada</div>
+    <div id="divId">ffff<span>bbbb</span></div>
+    <div><a href="javascript:click()">click</a></div>
   </div>
 </body>
+
+<script src="https://cdn.bootcss.com/jquery/3.5.0/jquery.min.js"></script>
+<script>
+
+function click(){
+  var txt = $("#divId").text();
+  console.log(txt);
+  var chIds =  $(".js-line").children();
+  $.each(chIds,function(i,ele){
+    console.log(ele);
+  });
+  var nodes = $("#divId")[0].childNodes;
+  for(var i=0;i<nodes.length;i++){
+    var node = nodes[i];
+    console.log(node.html);
+    console.log(node.nodeType);
+    console.log(node);
+  }
+  console.log(html);
+}
+</script>
 </html>

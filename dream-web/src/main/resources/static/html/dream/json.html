@@ -87,12 +87,14 @@
     background-color: #FFFAFA;
     opacity: 1.0;
   }
+  .j-blank{
 
+  }
   .console {
     outline: none;
     font-weight: 900;
     color: #000000;
-    /* overflow: scroll; */
+    overflow: scroll;
     /* position:relative; */
     /* float: left; */
     /* white-space: nowrap; */
@@ -115,6 +117,7 @@
       <div class="cn-title">
         <span><a class="cn-btn" href="html/dream/main.html">主页</a></span>
         <span><a class="cn-btn" href="javascript:compress()">压缩</a></span>
+        <span><a class="cn-btn" href="javascript:simpleFormat()">格式化</a></span>
         <span><a class="cn-btn" href="javascript:insertSql()">SQL:插入</a></span>
         <!-- <span><a class="cn-btn" href="javascript:updateSql()">SQL:更新</a></span> -->
         <span><a class="cn-btn" href="html/dream/about.html">关于</a></span>
@@ -135,7 +138,7 @@
         <a href ="javascript:closeDialog()" style="margin-right:50px;text-decoration: none;">关闭</a>
       </span>
     </div>
-    <div class="console" id="consoleId" contenteditable="plaintext-only"></div>
+    <div class="console" id="consoleId"  ></div>
   </div>
 </body>
 <script src="https://cdn.bootcss.com/jquery/3.5.0/jquery.min.js"></script>
@@ -143,7 +146,9 @@
 <script src="../../js/util.js"></script>
 <script src="../../js/jquery.jsonBak.js"></script>
 <script>
-
+  var lastEle = null;
+  var lastBackground = null;
+  var lastTxt = "";
 
   //初始化工作
   $(function () {
@@ -158,15 +163,19 @@
         $("#linesId").focus();
       }
     });
+    //监听键盘弹起事件
+    $("#linesId").keyup(function (event) {
+      if(event.keyCode == 86 || event.keyCode == 91){
+        simpleFormat();
+      }
+    });
+    //点击关闭提示框
     $("#linesId").click(function(){
       closeDialog();
     });
   }
 
   function initJson() {
-    $("#linesId").keyup(function () {
-      format();
-    });
     var initLineNum = 150;
     $("#linesId").focus();
     $("#lineNumId").html(JSONFormat._lineNumHtml(initLineNum));
@@ -176,9 +185,8 @@
     $(window).scrollTop(0);
     $("#linesId").focus();
   }
-  var lastEle = null;
-  var lastBackground = null;
-  function format() {
+  
+  function simpleFormat() {
     var text = getSpanText();
     var data = JSONFormat.doFormat(text);
     $("#linesId").html(data.html);
@@ -202,9 +210,26 @@
   //获取格式化的内容
   function getSpanText() {
     var text = "";
-    $.each($("#linesId").find("span"), function (i, ele) {
-      text += $(ele).text();
+
+    var eles = $("#linesId").children();
+    $.each(eles, function (i, ele) {
+      var nodes = ele.childNodes;
+      if(nodes != null ){
+        for(var i=0;i<nodes.length;i++){
+          var node = nodes[i];
+          var nodeType = node.nodeType;
+          if(nodeType == 3){
+            var cont = node.textContent+"";
+            text += cont.trim();
+          }else if(nodeType == 1){
+            if(node.getAttribute("data-blank") != 0){
+              text += node.innerText;
+            }
+          }
+        }
+      }
     });
+    //console.log(text);
     if (text.replace(/\s+/g, "") == "") {
       text = $("#linesId").text();
     }
@@ -215,7 +240,7 @@
     var text = getSpanText();
     var obj = $.parseJSON(text);
     var compressVal = JSON.stringify(obj);
-    compressVal +="<div>"+compressVal+"</div>";
+   // compressVal ="<div>"+compressVal+"</div>";
     showInDialog(compressVal);
 
   }
