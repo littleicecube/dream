@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <title>常用汇编指令</title>
+</head>
+<style>
+  .dir{
+    background-color:#2D2D2D;
+    color:#CCCCCC;
+    font-size: 18px; 
+    white-space:normal;
+    font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+  }
+</style>
+<body>
+  <div class="dir">
+    16进制常见的表示方法:</br>
+    <l1>十进制值:100-->十六进制:0x64</l1></br>
+    <l1>十进制值:100-->十六进制:64h</l1></br>
+  </div>
+  <p></p>
+
+  <div class="dir">
+    <div><strong>加法指令用例  add</strong></div></br>
+    <div>mov ax,8h</div>
+    <div>mov bx,4h</div>
+    <div>add ax,bx</div>
+    <div>------------</div>
+    <div>结果保存在ax中</div>
+    <div>(ax)= 000ch(12) </div>
+  </div>
+  </br>
+
+  <div class="dir">
+    <div><strong>减法指令用例  sub</strong></div></br>
+    <div>mov ax,8h</div>
+    <div>mov bx,4h</div>
+    <div>sub ax,bx</div>
+    <div>------------</div>
+    <div>结果保存在ax中</div>
+    <div>(ax)= 0004h(4) </div>
+  </div>
+  </br>
+  <div class="dir">
+    <div>乘法指令用例  mul</div></br>
+    <div>8位*8位</div>
+    <div>mov al,8h</div>
+    <div>mov bl,4h</div>
+    <div>mul bl    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;bl中保存一个乘数</div>
+    <div>------------</div>
+    <div>结果保存在ax中</div>
+    <div>(ax)= 0020h(32) </div></br>
+    <div>*********************************</div>
+    <div>16位*16位</div>
+    <div>mov ax,64h               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;100</div>
+    <div>mov bx,8h</div>
+    <div>mul bx    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;bx中保存一个乘数</div>
+    <div>------------</div>
+    <div>结果:800,低16位在ax中,高16位在dx中</div>
+    <div>(ax)= 0320h(800)  (dx) = 0000f(0)</div>
+  </div>
+  <p></p>
+  <div class="dir">
+    <div>除法指令用例  div</div></br>
+    <div>8位/8位</div>
+    <div>mov al,9h</div>
+    <div>mov bl,2h</div>
+    <div>div bl    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;bl中保存除数</div>
+    <div>------------</div>
+    <div>商:4,保存在al中,余数:1,保存在ah中</div>
+    <div>(al)= 4h(4)  (ah) = 1h(1)</div>
+    </br>
+    <div>*********************************</div>
+    <div>16位/16位</div>
+    <div>mov ax,d8773h &nbsp;&nbsp;;886643</div>
+    <div>mov bx,2h</div>
+    <div>div bx    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;bx中保存除数</div>
+    <div>------------</div>
+    <div>商:443321,保存在ax中,余数:1,保存在dx中</div>
+    <div>(ax)= 6c3b9h(443321)  (dx) = 1h(1)</div>
+  </div>
+  <p></p>
+</body>
+
+
+<script src="https://cdn.bootcss.com/jquery/3.5.0/jquery.min.js"></script>
+<script src="../../js/jquery.key.js"></script>
+<script>
+$(document).bind('keydown', 'ctrl+d', function(ele){
+  console.log(ele);
+});
+
+</script>
+</html>
