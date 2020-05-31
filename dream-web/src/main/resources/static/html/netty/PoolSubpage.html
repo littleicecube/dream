@@ -47,6 +47,29 @@
         假设我们有一页内存大小是8KB(2^13=8*2^10),现在将这页内存按照大小16B进行划分,那么有8192/16(2^13>>>4)=512块.
         java中一个Long类型是8字节64位的长度,如果用每一位来表示对应的内存是否被分配,那么512个内存块需要512/64(2^9>>>6)=8个长度的long类型数组来表示.(8192/16/64=8)
       </p>
+
+      <p>
+
+      </p>
+      <div class="java">
+        <pre>
+          long[] bitmap;
+          bitmap = new long[8192 >> 10];
+          
+             bitmap[0]      bitmap[1]     bitmap[2]    bitmap[3]     bitmap[4]     bitmap[5]     bitmap[6]     bitmap[7]
+          +-------------+-------------+-------------+-------------+-------------+-------------+-------------+------------+
+          |     64      |     64      |     64      |      64     |      64     |      64     |     64      |     64     |
+          +-----+-------+------+------+------+------+-------+-----+-------+-----+-------+-----+------+------+------+-----+
+                |      64      |     128     |     192      |    256      |    320      |    384     |     448     |    512
+                |              |             |              |             |             |            |             |
+                v              v             v              v             v             v            v             v
+              64*16B        64*16B        64*16B        64*16B        64*16B       64*16B        64*16B        64*16B
+          +-------------+-------------+-------------+-------------+--------------------------+-------------+-------------+
+          | ...|16B|... | ...|16B|... | ...|16B|... | ...|16B|... | ...|16B|... |...|16B|... | ...|16B|... | ...|16B|... |
+          +-------------+-------------+-------------+-------------+--------------------------+-------------+-------------+
+          0            1KB           2KB           3KB           4KB           5KB          6KB           7KB           8KB
+        </pre>
+      </div>
       <div class="java">
         <pre>
         PoolSubpage(PoolSubpage<T> head, PoolChunk<T> chunk, int memoryMapIdx, int runOffset, int pageSize, int elemSize) {
@@ -59,11 +82,8 @@
         }
         </pre>
       </div>
-      <p>
-
-      </p>
       <div class="java">
-        <pre>  
+        <pre>          
         void init(PoolSubpage<T> head, int elemSize) {
             doNotDestroy = true;
             this.elemSize = elemSize;
@@ -87,6 +107,103 @@
                 }
             }
             addToPool(head);
+        }
+        </pre>
+      </div>
+      <p>根据位图bitmap的使用情况判断是否存在未使用的内存</p>
+      <div class="java">
+        <pre>
+        long allocate() {
+            if (elemSize == 0) {
+                return toHandle(0);
+            }
+            if (numAvail == 0 || !doNotDestroy) {
+                return -1;
+            }
+            //获取一个可用的位图索引，最小值是1，最大可取值是512
+            final int bitmapIdx = getNextAvail();
+            //根据索引值右移6位即除以64计算在biamap[]中的下标
+            int q = bitmapIdx >>> 6;
+            //bitmapIdx可能是512中某个值，代表了8个Long值中位图的使用情况，上一步计算了所在数组的下标
+            //bitmapIdx & 63表示只取底五位的值，高位全部清零，算出使用了一个long中的几个bit位
+            int r = bitmapIdx & 63;
+            assert (bitmap[q] >>> r & 1) == 0;
+            //假设是使用了bitmap[2]中的24位，那么q值位2，r值为24
+            //1L << r设置第24位为1，然后在修改bitmap[2]中的第24位为1
+            bitmap[q] |= 1L << r;
+            //如果可用的内存个数为0，则将其从缓存中移除
+            if (-- numAvail == 0) {
+                removeFromPool();
+            }
+    
+            return toHandle(bitmapIdx);
+        } 
+        </pre>
+      </div>
+      <div  class="java">
+        <pre>
+        private int getNextAvail() {
+            int nextAvail = this.nextAvail;
+            if (nextAvail >= 0) {
+                this.nextAvail = -1;
+                return nextAvail;
+            }
+            return findNextAvail();
+        }
+        </pre>
+      </div>
+      <div  class="java">
+        <pre>
+        private int findNextAvail() {
+            final long[] bitmap = this.bitmap;
+            final int bitmapLength = this.bitmapLength;
+            //遍历bitmap数组,查看是否有未分配的内存
+            for (int i = 0; i < bitmapLength; i ++) {
+                //遍历每一个Long类型
+                long bits = bitmap[i];
+                //如果取反不为0,表示还有空余的索引未用,只有Long类型的64位都是1都被用完后,~bits取反后才为0
+                if (~bits != 0) {
+                    return findNextAvail0(i, bits);
+                }
+            }
+            return -1;
+        }
+        </pre>
+      </div>
+      <p>用来判断Long类型的数据中那一位不是0,找到好返回对应的索引位置</p>
+      <div  class="java">
+        <pre>
+        private int findNextAvail0(int i, long bits) {
+            final int maxNumElems = this.maxNumElems;
+            //如果i=0表示开始使用第一个long的位图，0左移6位还是零
+            //如果i=1表示开始使用第二个long的位图，1左移6位相当于1乘以64，表示已经分配了64个，第一个long的位图用完了
+            //如果i=2表示开始使用第二个long的位图，2左移6为相当于2乘以64，表示已经分配了128个，第二个long的位图用完了
+            //i<<6等于i*64
+            final int baseVal = i << 6;
+            //遍历位图中的每一位
+            for (int j = 0; j < 64; j ++) {
+               //如果等于零表示未被分配，则分配
+                if ((bits & 1) == 0) {
+                   //已分配数加1
+                    int val = baseVal | j;
+                    if (val < maxNumElems) {
+                        return val;
+                    } else {
+                        break;
+                    }
+                }
+                bits >>>= 1;
+            }
+            return -1;
+        }
+        </pre>
+      </div>
+      <p>bitmapIdx的最大值为512一个integer类型就能表示完成，memoryMapIndex表示在树形叶子节点中的索引值，最大值为2048，一个integer类型就能表示完</p>
+      <p>现在将memoryMapIdx作为一个long的底32位，bitmmapIdx放在long的高位中，用一个long表示出要分配的内存的坐标</p>
+      <div class ="java">
+        <pre>
+        private long toHandle(int bitmapIdx) {
+          return 0x4000000000000000L | (long) bitmapIdx << 32 | memoryMapIdx;
         }
         </pre>
       </div>
