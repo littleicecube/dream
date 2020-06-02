@@ -1,14 +1,28 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN"> 
 <head>
   <title>Netty:PoolChunk</title>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
+<link href="simple.css" rel="stylesheet">
  
 <body>
-  <div>
+  <div class="main">
+    <header>
+      <h1>PoolChunk</h1>
+    </header>
+    <div class="content">
+      <p>
+        <br>假设我们有一段16M的内存,怎么能对其进行有效的分配和回收
+        <br>为了便于管理内存,防止内存在管理的过程中过度碎片化,一般情况下内存都是按页分配,当代操作系统中的内存页大小一般为8KB
+        <br>netty中是利用一颗高度为11的完全二叉树来组织管理每页内存
+        <br>16M/8kB = 2^24/2^13 = 2^11 = 2048
+        
+
+      </p>
+    </div>
   </div>
 </body>
 </html>
