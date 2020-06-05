@@ -15,13 +15,72 @@
     </header>
     <div class="content">
       <p>
-        <br>假设我们有一段16M的内存,怎么能对其进行有效的分配和回收
+        <br>假设我们有一段128KB的内存,怎么能对其进行有效的分配和回收
         <br>为了便于管理内存,防止内存在管理的过程中过度碎片化,一般情况下内存都是按页分配,当代操作系统中的内存页大小一般为8KB
-        <br>netty中是利用一颗高度为11的完全二叉树来组织管理每页内存
-        <br>16M/8kB = 2^24/2^13 = 2^11 = 2048
-        
+        <br>netty中是利用一颗完全二叉树来组织管理每页内存,128KB/8KB=16,构造一颗高度为5的完全二次树
+        <br><l3>分配节点16</l3>
+        <br>分配深度为4的第16节点,更新其深度为5,然后更新上级节点8的深度值为16节点深度值(5)和17节点深度值(4)的两者最小的深度值4
+        <br>然后逐级向上更新节点4的深度为8节点深度值(4)和9节点深度值(3)的最小深度值3
+        <br>更新节点2深度值为4节点的深度值(3)和5节点的深度值(2)的最小深度值2
+        <br>更新节点1深度值为2节点的深度值(2)和3节点的深度值(1)的最小深度值1
+        <br><l3>分配节点17</l3>
+        <br>首先更新17节点的深度值为5,然后更新上级节点8的深度值为16节点深度值(5)和17节点深度值(5)的两者最小深度值5
+        <br>然后逐级向上更新节点4的深度为8节点深度值(5)和9节点深度值(3)的最小深度值3
+        <br>通过判断相邻得出节点2和节点1的深度值保持不变
+        <br>分配节点18
+        <br>首先更新节点18的深度值为5,然后更新上级节点9的深度值为18节点深度值(5)和19节点深度值(4)的两者最小值深度值4
+        <br>逐级向上更新节点4的深度值为8节点深度值(5)和9节点深度值(4)的最小深度值4
+        <br>更新节点2深度值为4节点的深度值(4)和5节点的深度值(2)的最小深度值2
+        <br>更新节点1深度值为2节点的深度值(2)和3节点的深度值(1)的最小深度值1
+        <br>
 
+        <br>当要分配一页内存,判断顶部节点的深度是否为>=5,如果是表示整棵树代表的内存已经被分配完
+        <br>判断下一个节点是否小于5
+       
       </p>
+      <div class="java">
+      <pre>
+      </pre>
+      </div>
+      <pre>
+      PoolChunk(PoolArena<T> arena, T memory, int pageSize, int maxOrder, int pageShifts, int chunkSize, int offset) {
+        unpooled = false;
+        this.arena = arena;
+        this.memory = memory;
+        this.pageSize = pageSize;
+        this.pageShifts = pageShifts;
+        this.maxOrder = maxOrder;
+        this.chunkSize = chunkSize;
+        this.offset = offset;
+        unusable = (byte) (maxOrder + 1);
+        log2ChunkSize = log2(chunkSize);
+        subpageOverflowMask = ~(pageSize - 1);
+        freeBytes = chunkSize;
+
+        assert maxOrder < 30 : "maxOrder should be < 30, but is: " + maxOrder;
+        maxSubpageAllocs = 1 << maxOrder;
+
+        //创建内存映射,每页大小8KB,16MB内存共有16MB/8KB=2048=2^11个页面
+        //创建一个2048长度的数组,数组下标是树节点的序号,数组的值是二叉树子树的深度,
+        memoryMap = new byte[maxSubpageAllocs << 1];
+        //这个数组和memoryMap一样的内容,但是创建完成后不会在改变,用来做对照反查
+        depthMap = new byte[memoryMap.length];
+        int memoryMapIndex = 1;
+        for (int d = 0; d <= maxOrder; ++ d) { // move down the tree one level at a time
+            int depth = 1 << d;
+            for (int p = 0; p < depth; ++ p) {
+                // in each level traverse left to right and set value to the depth of subtree
+                memoryMap[memoryMapIndex] = (byte) d;
+                depthMap[memoryMapIndex] = (byte) d;
+                memoryMapIndex ++;
+            }
+        }
+        subpages = newSubpageArray(maxSubpageAllocs);
+      }
+      </pre>
+      asda
+      <pre>
+      </pre>
     </div>
   </div>
 </body>
