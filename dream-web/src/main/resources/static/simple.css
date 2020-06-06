@@ -1,0 +1,27 @@
+ 
+  .main {
+    margin: 0 auto;
+    margin-top: 3em;
+    max-width: 1200px;
+    line-height: 1.6;
+    color: #3b3e48;
+    font-family: trebuchet ms, Verdana, verdana ref, segoe ui, Candara, lucida grande, lucida sans unicode, lucida sans, Tahoma, sans-serif;
+  }
+
+  .content {
+    width: 1100px;
+    font-size: 1em;
+    border-radius: 3px;
+ 
+  }
+
+  pre{
+    letter-spacing: normal;
+    border-radius: 3px;
+    line-height: 1.0;
+    font-size: 1.1em;
+    color: #eee;
+    background-color: #2c3e50;
+    padding-top: 3px; 
+    
+  }
