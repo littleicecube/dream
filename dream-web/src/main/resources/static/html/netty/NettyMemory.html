@@ -6,11 +6,35 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
- 
+<link href="simple.css" rel="stylesheet">
 <body>
-  <div>
-    <p>在JVM中创建对象,数组不需要手动进行内存的分配和释放,JVM替我么接管了相关工作</p>
-    <p>为了更加高效的利用内存,netty中自身实现了对内存的管理工作,并将其池化</p>
+  <div class="main">
+    <header>
+      <h1>PoolArena</h1>
+    </header>
+    <div class="content">
+      <br>在Java中创建对象后,不需要我们在编写代码进行内存回收,gc会根据一定算法判断出对象什么时候应该被回收,为了更加高效的利用内存,netty中自身实现了对内存的管理工作,并将其池化
+      <br>在Netty中分配内存时会尽量使用DirectByteBuffer,可以有效减少因为gc带来的内存拷贝移动,DirectByteBuffer分配的内存是利用malloc分配的用户态内存
+      <br>HeapByteBuffer类型的内存是在jvm管理的堆上进行分配的,
+      当发生gc时可能需要拷贝移动到新的位置,当将HeapByteBuffer类型内存发送到网卡时,会创建临时的DirectByteBuffer类型的内存空间,并将HeapByteBuffer
+      内存拷贝到其中,如果不拷贝到DirectByteBuffer空间中,一旦发生gc,内存地址有可能就会发生变化,而操作系统io函数发送数据时需要传入内存的地址
+      <br>DirectByteBuffer是java堆外内存是不受到gc管理的,当创建是DirectByteBuffer内存时,会在堆外申请一段内存,在java堆内存中,创建一个对象用来记录
+      分配的堆外内存的起始地址和长度,当发生gc时,拷贝移动的只是记录地址的对象,而不会移动申请的内存段.当发送入DirectByteBuffer类型的数据时,直接传递地址到系统io函数即可,
+      减少了java堆内到堆外的一次拷贝
+      <br>
+      <br>为了方便内存的管理,netty中用PoolArena,PoolChunk,PoolSubpage,PooledByteBuf几个对象来定义
+      <br>PoolSubpage将内存按照一页一页进行定义,默认情况下每页内存大小是8KB.现实情况是我们使用内存的过程中不可能每次都使用8KB的内存,因此PoolSubpage中又
+      依靠elemSize的大小对这一页内存进行了又一次的划分,可取的值有:16B,32B,48B,64B,80B,96B,112B,128B...480B,496B共32个为tiny类型的
+      512B,1024B,2048B,4096B共4个为small类型的.假设要分配30B的内存,就会将其与32B对齐,设置elemSize=32B.一页内存大小有8192B,
+      会被划分为maxNumElems=pageSize/elemSize=8192KB/32B=256份
+      <br>PoolChunk是用来组织PoolSubpage的.默认情况下PoolChunk会构造一颗12层的满的完全二叉树.每个叶子节点代表了一页内存(PoolSubpage),默认情况下有2048个叶子
+      节点,每个叶子节点8KB内存,那么整棵树代表了2048*8KB=16MB的内存,二叉树在查找效率高,同时可以通过检查父节点的分配情况就可以知道子树中是否存在可用内存
+      <br>PoolArena中利用链表将一个个PoolChunk连接起来,会通过ThreadLocal和线程绑定.会将分配成功未使用完的PoolSubpage进行缓存
+      <br>PooledByteBuf.以上几个类对象只是对内存的使用情况进行了分配,释放的管理操作,而真正的内存是通过PooledByteBuf进行分配的
+      <br>PooledByteBuf中会通过ByteBuffer.allocateDirect(capacity)申请一段真实的内存,然后在和PoolArena,PoolChunk,PoolSubpage进行关联,
+      达到申请内存,管理内存的目的
+
+    </div>
   </div>
 </body>
 </html>

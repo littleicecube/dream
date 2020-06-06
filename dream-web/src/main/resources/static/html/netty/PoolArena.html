@@ -6,9 +6,136 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
+<link href="simple.css" rel="stylesheet">
+
  
 <body>
-  <div>
-  </div>
+  <div class="main">
+    <header>
+      <h1>PoolArena</h1>
+    </header>
+    <div class="content">
+      <br>小于512的内存会判断属于哪个典型值
+      <br>tiny的典型值有:16B,32B,48B,64B,80B,96B,112B,128B...480B,496B共32个,每个都是16B的倍数,最大倍数为31,16B*31=496B
+      <br>针对这些典型值,PoolArena中会创建一个数组 private final PoolSubpage<T>[] tinySubpagePools;数组的下标是16B的倍数值,
+      <br>相似的small的典型值有,512B,1024B,2048B,4096B
+      <br>针对这些典型值,PoolArena中会创建一个数组 private final PoolSubpage<T>[] smallSubpagePools;
+
+    <pre>
+      private void allocate(PoolThreadCache cache, PooledByteBuf<T> buf, final int reqCapacity) {
+        final int normCapacity = normalizeCapacity(reqCapacity);
+        //判断要分配的内存是否小于一页的大小,默认一页为8KB
+        if (isTinyOrSmall(normCapacity)) {
+            int tableIdx;
+            PoolSubpage<T>[] table;
+            //判断要分配的内存是否小于512B
+            boolean tiny = isTiny(normCapacity);
+            if (tiny) {
+                //如果缓存中存在可分配的内存,直接分配返回
+                if (cache.allocateTiny(this, buf, reqCapacity, normCapacity)) {
+                    return;
+                }
+                //通过要分配的内存查看属于哪个典型值,然后返回在数组的位置
+                tableIdx = tinyIdx(normCapacity);
+                table = tinySubpagePools;
+            } else {
+                if (cache.allocateSmall(this, buf, reqCapacity, normCapacity)) {
+                    return;
+                }
+                tableIdx = smallIdx(normCapacity);
+                table = smallSubpagePools;
+            }
+            final PoolSubpage<T> head = table[tableIdx];
+            synchronized (head) {
+                final PoolSubpage<T> s = head.next;
+                //如果head的指向中存在上次为用的内存,则从中分配
+                if (s != head) {
+                    assert s.doNotDestroy && s.elemSize == normCapacity;
+                    //分配固定的内存
+                    long handle = s.allocate();
+                    assert handle >= 0;
+                    //初始化内存的坐标
+                    s.chunk.initBufWithSubpage(buf, handle, reqCapacity);
+                    incTinySmallAllocation(tiny);
+                    return;
+                }
+            }
+            //如果不存在已经分配好的未使用完符合需求的内存,则重新从节点中分配一页内存
+            synchronized (this) {
+                allocateNormal(buf, reqCapacity, normCapacity);
+            }
+            //对已经分配的内存计数
+            incTinySmallAllocation(tiny);
+            return;
+        }
+        //如果请求分配的内存小于chunkSize,默认情况下是16MB,则正常分配
+        if (normCapacity <= chunkSize) {
+            if (cache.allocateNormal(this, buf, reqCapacity, normCapacity)) {
+                return;
+            }
+            synchronized (this) {
+                allocateNormal(buf, reqCapacity, normCapacity);
+                ++allocationsNormal;
+            }
+        } else {
+            // Huge allocations are never served via the cache so just call allocateHuge
+            allocateHuge(buf, reqCapacity);
+        }
+      }
+    </pre>
+
+    <pre>
+      private void allocateNormal(PooledByteBuf<T> buf, int reqCapacity, int normCapacity) {
+        if (q050.allocate(buf, reqCapacity, normCapacity) || q025.allocate(buf, reqCapacity, normCapacity) ||
+            q000.allocate(buf, reqCapacity, normCapacity) || qInit.allocate(buf, reqCapacity, normCapacity) ||
+            q075.allocate(buf, reqCapacity, normCapacity)) {
+            return;
+        }
+        //创建一颗完全二叉树,高度11,每个叶子节点代表8KB内存,整棵树共管理16MB内存
+         PoolChunk<T> c = newChunk(pageSize, maxOrder, pageShifts, chunkSize);
+        //从树中分配指定大小的内存,返回的handle用来表示分配内存的坐标
+        long handle = c.allocate(normCapacity);
+        assert handle > 0;
+        c.initBuf(buf, handle, reqCapacity);
+        qInit.add(c);
+    }
+    </pre>
+    <pre>
+      
+
+      void initBuf(PooledByteBuf<T> buf, long handle, int reqCapacity) {
+        //通过handle的低32位获取分配的内存页在二叉树中的id序号(共2048个)
+        int memoryMapIdx = memoryMapIdx(handle);
+        //通过handle的高32位获取分配内存在一页内存中的索引号,每页没存大小8KB,不可能每次都是一次使用8K的内存,所以每页内存还需要在划分成更小的块
+        int bitmapIdx = bitmapIdx(handle);
+        if (bitmapIdx == 0) {
+            byte val = value(memoryMapIdx);
+            assert val == unusable : String.valueOf(val);
+            //将获取的内存位置更新buf中
+            buf.init(this, handle, runOffset(memoryMapIdx) + offset, reqCapacity, runLength(memoryMapIdx),
+                     arena.parent.threadCache());
+        } else {
+            initBufWithSubpage(buf, handle, bitmapIdx, reqCapacity);
+        }
+    }
+    //根据分配的内存页id计算内存在16MB的位置
+    private int runOffset(int id) {
+      //假设id = 2048,那么depth(id)=11, 1<< 11 = 2048,2048^2048 = 0,相对位置是0
+      //假设id = 2049,那么depth(id)=11, 1<< 11 = 2048,2049^2048 = 1,相对位置为1
+      //假设id = 2050,那么depth(id)=11, 1<< 11 = 2049,2050^2050 = 2,相对位置为2
+      //假设id = 1024是2048,2049的父节点,那么depth(id)=10,1<< 10 = 1024,1024^1024 = 0 相对位置为0
+      int shift = id ^ 1 << depth(id);
+      //相对位置 * 叶子节点大小或子树的大小得出在16MB中的偏移量
+      return shift * runLength(id);
+    }
+    //根据id获取层,根据所在层算出叶子节点或子节点的代表的内存大小
+    private int runLength(int id) {
+      //默认情况下log2ChunkSize = log2(chunkSize)=log2(8KB*2^11) = log2(2^13*2^11)=log2(2^24)=24
+      //假设id=2048(第一个叶子节点),depth(2048)=11,  1<< 24-11 = 1<<23 = 8KB
+      //假设id=1024(2048和2049的父亲节点),depth(1024)=10,  1<<24-10 = 1<24 = 16KB正好两个叶子节点的大小
+      return 1 << log2ChunkSize - depth(id);
+    }
+    </pre>
+    </div>
 </body>
 </html>

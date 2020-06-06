@@ -198,8 +198,8 @@
         }
         </pre>
       </div>
-      <p>bitmapIdx的最大值为512一个integer类型就能表示完成，memoryMapIndex表示在树形叶子节点中的索引值，最大值为2048，一个integer类型就能表示完</p>
-      <p>现在将memoryMapIdx作为一个long的底32位，bitmmapIdx放在long的高位中，用一个long表示出要分配的内存的坐标</p>
+      <br>bitmapIdx的最大值为512一个integer类型就能表示完成，memoryMapIndex表示在树形叶子节点中的索引值，最大值为2048，一个integer类型就能表示完
+      <br>现在将memoryMapIdx作为一个long的底32位，bitmmapIdx放在long的高位中，用一个long表示出要分配的内存的坐标
       <div class ="java">
         <pre>
         private long toHandle(int bitmapIdx) {
