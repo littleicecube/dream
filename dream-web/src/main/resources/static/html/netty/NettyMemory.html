@@ -13,6 +13,7 @@
       <h1>PoolArena</h1>
     </header>
     <div class="content">
+      <br>netty中HeapByteBuffer,DirectByteBuffer,有池化HeapByteBuffer,非池化HeapByteBuffer,池化DirectByteBuffer,非池化DirectByteBuffer
       <br>在Java中创建对象后,不需要我们在编写代码进行内存回收,gc会根据一定算法判断出对象什么时候应该被回收,为了更加高效的利用内存,netty中自身实现了对内存的管理工作,并将其池化
       <br>在Netty中分配内存时会尽量使用DirectByteBuffer,可以有效减少因为gc带来的内存拷贝移动,DirectByteBuffer分配的内存是利用malloc分配的用户态内存
       <br>HeapByteBuffer类型的内存是在jvm管理的堆上进行分配的,
@@ -23,13 +24,17 @@
       减少了java堆内到堆外的一次拷贝
       <br>
       <br>为了方便内存的管理,netty中用PoolArena,PoolChunk,PoolSubpage,PooledByteBuf几个对象来定义
+      <br>PoolSubpage
       <br>PoolSubpage将内存按照一页一页进行定义,默认情况下每页内存大小是8KB.现实情况是我们使用内存的过程中不可能每次都使用8KB的内存,因此PoolSubpage中又
       依靠elemSize的大小对这一页内存进行了又一次的划分,可取的值有:16B,32B,48B,64B,80B,96B,112B,128B...480B,496B共32个为tiny类型的
       512B,1024B,2048B,4096B共4个为small类型的.假设要分配30B的内存,就会将其与32B对齐,设置elemSize=32B.一页内存大小有8192B,
       会被划分为maxNumElems=pageSize/elemSize=8192KB/32B=256份
+      <br>PoolChunk
       <br>PoolChunk是用来组织PoolSubpage的.默认情况下PoolChunk会构造一颗12层的满的完全二叉树.每个叶子节点代表了一页内存(PoolSubpage),默认情况下有2048个叶子
       节点,每个叶子节点8KB内存,那么整棵树代表了2048*8KB=16MB的内存,二叉树在查找效率高,同时可以通过检查父节点的分配情况就可以知道子树中是否存在可用内存
+      <br>PoolArena
       <br>PoolArena中利用链表将一个个PoolChunk连接起来,会通过ThreadLocal和线程绑定.会将分配成功未使用完的PoolSubpage进行缓存
+      <br>PooledByteBuf
       <br>PooledByteBuf.以上几个类对象只是对内存的使用情况进行了分配,释放的管理操作,而真正的内存是通过PooledByteBuf进行分配的
       <br>PooledByteBuf中会通过ByteBuffer.allocateDirect(capacity)申请一段真实的内存,然后在和PoolArena,PoolChunk,PoolSubpage进行关联,
       达到申请内存,管理内存的目的
